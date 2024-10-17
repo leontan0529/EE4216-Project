@@ -1,0 +1,31 @@
+@startuml
+skinparam monochrome true
+skinparam shadowing false
+
+participant "Environment" as SensorsESP32
+participant "Intrusion" as IntrusionESP32
+participant "Control Center" as CCESP32
+actor User as u
+participant "Hosted API\n(Local Server/RPi)" as HostedAPI
+
+CCESP32 -> CCESP32 : Display Data \n(through LCD behind 2-way Mirror)
+u -> CCESP32 : View Data on LCD
+u --> CCESP32 : Local Control (if needed)
+SensorsESP32 -> SensorsESP32 : Monitor Humidity & Temp \nvia DHT11
+SensorsESP32 -> SensorsESP32 : Monitor Ambient Light Levels \nvia BH1750
+SensorsESP32 -> SensorsESP32 : Detect Motion \nvia HCSR501
+SensorsESP32 -> SensorsESP32: Detect Gas \nvia MQ135
+SensorsESP32 <--> CCESP32: Lighting Input
+CCESP32 -> HostedAPI: Smart Lighting ML Input
+HostedAPI -> HostedAPI: Smart Lighting ML
+HostedAPI -> CCESP32: Smart Lighting ML Output
+IntrusionESP32 -> IntrusionESP32 : Monitor Intrusion \nvia Magnetic Door Sensor
+IntrusionESP32 -> IntrusionESP32 : Control Door Lock \nvia Relay Module
+IntrusionESP32 -> IntrusionESP32 : Trigger Alarm on Intrusion \nvia Buzzer
+IntrusionESP32 -> IntrusionESP32 : Light up on Intrusion \nvia LED
+IntrusionESP32 -> IntrusionESP32 : Capture Image of Intruder \nvia Adafruit OVA5640
+IntrusionESP32 <--> CCESP32: Intrusion Input
+CCESP32 -> CCESP32: Intrusion Logic Handling
+CCESP32 -> IntrusionESP32: Intrusion Output
+CCESP32 --> HostedAPI : Push Data to Hosted API \n(for ML Training)
+@enduml
