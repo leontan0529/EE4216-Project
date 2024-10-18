@@ -50,6 +50,10 @@ docker ps
 ```
 Alternatively, you may use **docker desktop** app to view your running containers
 ### Miscellaneous Notes:
+- Pre-Requisite: Give permissions to all shell scripts
+```bash
+chmod 755 *.sh
+```
 - To stop all containers from running, execute the *stop.sh* script
 ```bash
 ./stop.sh

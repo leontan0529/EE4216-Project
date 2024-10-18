@@ -1,6 +1,7 @@
 #version: '3.8'
 services:
-  grafana:
+  # Dashboard
+  grafana_ee4216:
     image: grafana/grafana
     container_name: grafana_ee4216
     restart: always
@@ -9,6 +10,8 @@ services:
       cd /var/lib/grafana &&
       mkdir -p dashboards &&
       /run.sh"
+    depends_on:
+      - 'mongo-tsdb'
     ports:
      - '3000:3000'
     volumes:
@@ -17,8 +20,79 @@ services:
     networks:
       - iot_net
 
+  # Database
+  mongo-tsdb:
+    image: mongo:latest
+    container_name: mongo-tsdb
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: mongodb
+      MONG_INITDB_DATABASE: sensor
+    volumes:
+      - ./mongo-tsdb/mongo_data:/data/db
+    ports:
+      - '27017:27017'
+    networks:
+      - iot_net
+
+  # Database Manager
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_MONGODB_SERVER: mongo-tsdb
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: mongodb
+      ME_CONFIG_BASICAUTH_USERNAME: admin
+      ME_CONFIG_BASICAUTH_PASSWORD: mongodb
+    volumes:
+      - ./mongo-tsdb/mongo_data:/data/db
+    ports: 
+      - '8081:8081'
+    depends_on:
+      - mongo-tsdb
+    networks:
+      - iot_net
+
+  # Database Exporter
+  mongo-exporter:
+    image: bitnami/mongodb-exporter:latest
+    container_name: mongo-exporter
+    restart: always
+    environment:
+      MONGODB_URI: mongodb://root:mongodb@mongodb:27017
+    ports:
+      - '9216:9216'
+    depends_on:
+      - mongo-tsdb
+    networks:
+      - iot_net
+
+  # Metrics Provider/Scraper
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: always
+    volumes:
+      - prometheus:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - ./prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - '9090:9090'
+    depends_on:
+      - mongo-tsdb
+    networks:
+      - iot_net 
+
 volumes:
   grafana-storage: {}
+  prometheus: {}
 
 networks:
   iot_net:
+    driver: bridge

@@ -1,0 +1,12 @@
+show dbs
+db.createCollection("testCollection")
+use sensor
+show dbs;
+db.getMongo().getDBNames;
+show dbs
+use sensor
+show dbs
+q
+show dbs;
+show dbs
+dbs
