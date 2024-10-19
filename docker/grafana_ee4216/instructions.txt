@@ -1,0 +1,3 @@
+Change organisation account: ./provisioning/dashboards/dashboard.yml
+Change database: ./provisioning/datasources/datasource.yml
+Change main dashboard: ./provisioning/dashboards/dashboard.yml

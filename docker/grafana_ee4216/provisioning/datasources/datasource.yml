@@ -1,0 +1,6 @@
+#datasources:
+#  - name:
+#    type: postgres
+#    access: proxy
+#    url: http://container-name:5432
+#    isDefault: true  
