@@ -13,15 +13,15 @@
 
 DHT dht(DHTPIN, DHTTYPE);
 Adafruit_NeoPixel pixels(NUM_PIXELS, RGB_PIN, NEO_GRB + NEO_KHZ800);
-AsyncWebServer server(80);
 
-const char* ssid = "jonathan";         // Replace with your Wi-Fi SSID
-const char* password = "12345678";     // Replace with your Wi-Fi password
+const char* ssid = "ESP32_AP";         // Access Point SSID
+const char* password = "12345678";     // Access Point Password
+const char* accessPointHost = "http://192.168.4.1"; // Replace with your Access Point IP address
 
 // Function declarations
 float getDistance();
+void sendDataToAccessPoint(float humidity, float temperature);
 void readSensorsTask(void *pvParameters);
-void handleWebRequest(AsyncWebServerRequest *request);
 
 void setup() {
     Serial.begin(115200);
@@ -42,41 +42,12 @@ void setup() {
     Serial.println(WiFi.localIP());
     Serial.println("Connected to WiFi");
 
-
-    // Define web server routes
-    server.on("/", HTTP_GET, [](AsyncWebServerRequest *request){
-        handleWebRequest(request);
-    });
-
-    server.on("/relay_on", HTTP_GET, [](AsyncWebServerRequest *request){
-        digitalWrite(RELAY_PIN, LOW); // Activate relay
-        request->send(200, "text/plain", "Relay ON");
-    });
-
-    server.on("/relay_off", HTTP_GET, [](AsyncWebServerRequest *request){
-        digitalWrite(RELAY_PIN, HIGH); // Deactivate relay
-        request->send(200, "text/plain", "Relay OFF");
-    });
-
-    server.begin();
-
     // Create tasks for RTOS
     xTaskCreate(readSensorsTask, "Read Sensors", 2048, NULL, 1, NULL);
 }
 
 void loop() {
-    // Main loop can be empty as tasks are handled by the web server and RTOS
-}
-
-float getDistance() {
-    digitalWrite(TRIG_PIN, LOW);
-    delayMicroseconds(2);
-    digitalWrite(TRIG_PIN, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(TRIG_PIN, LOW);
-
-    long duration = pulseIn(ECHO_PIN, HIGH);
-    return (duration * 0.0343) / 2; // Calculate distance in cm
+// Main loop can be empty as tasks are handled by the web server and RTOS
 }
 
 void readSensorsTask(void *pvParameters) {
@@ -84,25 +55,22 @@ void readSensorsTask(void *pvParameters) {
         // Read temperature and humidity
         float humidity = dht.readHumidity();
         float temperature = dht.readTemperature();
-
-        if (isnan(humidity) || isnan(temperature)) {
-            Serial.println("Failed to read from DHT sensor!");
-            vTaskDelay(2000 / portTICK_PERIOD_MS); // Delay for stability
-            continue;
-        }
-
-        Serial.print("Humidity: ");
-        Serial.print(humidity);
-        Serial.print(" %\tTemperature: ");
-        Serial.print(temperature);
-        Serial.println(" *C");
-
-        // Measure distance with HC-SR04
         float distance = getDistance();
-        
-        Serial.print("Distance: ");
-        Serial.print(distance);
-        Serial.println(" cm");
+
+        if (!isnan(humidity) && !isnan(temperature)) {
+            sendDataToAccessPoint(humidity, temperature, distance);
+            Serial.print("Humidity: ");
+            Serial.print(humidity);
+            Serial.print(" %\tTemperature: ");
+            Serial.print(temperature);
+            Serial.print(" *C\tDistance: ");
+            Serial.print(distance);
+            Serial.println(" cm");
+        } else {
+            Serial.println("Failed to read from DHT sensor!");
+        }
+        delay(10000); // Send data every 10 seconds
+    }
 
         // Control relay based on distance or other conditions
         if (distance < 10) { // Assuming <10 cm indicates an intruder
@@ -124,14 +92,38 @@ void readSensorsTask(void *pvParameters) {
     }
 }
 
-void handleWebRequest(AsyncWebServerRequest *request) {
-    String html = "<html><body><h1>Sensor Data</h1>";
-    html += "<p>Humidity: " + String(dht.readHumidity()) + " %</p>";
-    html += "<p>Temperature: " + String(dht.readTemperature()) + " *C</p>";
-    html += "<p>Distance: " + String(getDistance()) + " cm</p>";
-    html += "<p><a href=\"/relay_on\">Turn Relay ON</a></p>";
-    html += "<p><a href=\"/relay_off\">Turn Relay OFF</a></p>";
-    html += "</body></html>";
-    
-    request->send(200, "text/html", html);
+float getDistance() {
+    digitalWrite(TRIG_PIN, LOW);
+    delayMicroseconds(2);
+    digitalWrite(TRIG_PIN, HIGH);
+    delayMicroseconds(10);
+    digitalWrite(TRIG_PIN, LOW);
+
+    long duration = pulseIn(ECHO_PIN, HIGH);
+    return (duration * 0.0343) / 2; // Calculate distance in cm
+}
+
+void sendDataToAccessPoint(float humidity, float temperature, float distance) {
+    if (WiFi.status() == WL_CONNECTED) {
+        HTTPClient http;
+        String url = String(accessPointHost) + "/sensor_data";
+
+        String payload = "humidity=" + String(humidity) + "&temperature=" + String(temperature) + "&distance=" + String(distance);
+
+        http.begin(url); 
+        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+
+        int httpResponseCode = http.POST(payload); 
+
+        if (httpResponseCode > 0) {
+            String response = http.getString(); 
+            Serial.println(httpResponseCode);   
+            Serial.println(response);            
+        } else {
+            Serial.print("Error on sending POST: ");
+            Serial.println(httpResponseCode);
+        }
+        
+        http.end(); 
+    }
 }
