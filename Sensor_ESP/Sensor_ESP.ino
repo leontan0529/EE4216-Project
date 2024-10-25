@@ -2,6 +2,8 @@
 #include <ESPAsyncWebSrv.h>
 #include <DHT.h>
 #include <Adafruit_NeoPixel.h>
+#include <HTTPClient.h>
+#include <Arduino.h>
 
 #define DHTPIN 4           // DHT22 data pin
 #define DHTTYPE DHT22      // DHT type
@@ -10,6 +12,8 @@
 #define RELAY_PIN 16      // Relay control pin
 #define RGB_PIN 17        // RGB LED pin
 #define NUM_PIXELS 1      // Number of pixels in RGB LED stick
+#define CONTACT_PIN 7     // Magnetic contact sensor
+#define BUZZER_PIN 6
 
 DHT dht(DHTPIN, DHTTYPE);
 Adafruit_NeoPixel pixels(NUM_PIXELS, RGB_PIN, NEO_GRB + NEO_KHZ800);
@@ -20,8 +24,9 @@ const char* accessPointHost = "http://192.168.4.1"; // Replace with your Access 
 
 // Function declarations
 float getDistance();
-void sendDataToAccessPoint(float humidity, float temperature);
+void sendDataToAccessPoint(float humidity, float temperature, float distance);
 void readSensorsTask(void *pvParameters);
+void standbyIntruderAlarm(void *pvParameters);
 
 void setup() {
     Serial.begin(115200);
@@ -31,6 +36,9 @@ void setup() {
     pinMode(TRIG_PIN, OUTPUT);
     pinMode(ECHO_PIN, INPUT);
     pinMode(RELAY_PIN, OUTPUT);
+
+    pinMode(CONTACT_PIN, INPUT_PULLUP);  // Assume switch is normally closed, pulled up
+    pinMode(BUZZER_PIN, OUTPUT);
 
     // Connect to Wi-Fi
     WiFi.begin(ssid, password);
@@ -44,6 +52,7 @@ void setup() {
 
     // Create tasks for RTOS
     xTaskCreate(readSensorsTask, "Read Sensors", 2048, NULL, 1, NULL);
+    xTaskCreate(standbyIntruderAlarm, "Sound buzzer", 1024, NULL, 2, NULL); // Alarm must have higher priority
 }
 
 void loop() {
@@ -69,8 +78,6 @@ void readSensorsTask(void *pvParameters) {
         } else {
             Serial.println("Failed to read from DHT sensor!");
         }
-        delay(10000); // Send data every 10 seconds
-    }
 
         // Control relay based on distance or other conditions
         if (distance < 10) { // Assuming <10 cm indicates an intruder
@@ -87,9 +94,22 @@ void readSensorsTask(void *pvParameters) {
             pixels.setPixelColor(0, pixels.Color(0, 255, 0)); // Green color when safe
             pixels.show();
         }
-
-        vTaskDelay(2000 / portTICK_PERIOD_MS); // Delay before next reading
+        delay(10000); // Send data every 10 seconds
     }
+
+    vTaskDelay(2000 / portTICK_PERIOD_MS); // Delay before next reading
+}
+
+void standbyIntruderAlarm(void *pvParameters) {
+  int contactState = digitalRead(CONTACT_PIN);
+
+  if (contactState == HIGH) { // Switch is disconnected
+      digitalWrite(BUZZER_PIN, HIGH); // Sound the buzzer
+  } else { // Switch is connected
+      digitalWrite(BUZZER_PIN, LOW);  // Silence the buzzer
+  }
+
+  delay(100); // Small delay to debounce the switch
 }
 
 float getDistance() {
