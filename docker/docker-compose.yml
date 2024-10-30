@@ -10,8 +10,6 @@ services:
       cd /var/lib/grafana &&
       mkdir -p dashboards &&
       /run.sh"
-    depends_on:
-      - 'mongo-tsdb'
     ports:
      - '3000:3000'
     volumes:
@@ -21,54 +19,54 @@ services:
       - iot_net
 
   # Database
-  mongo-tsdb:
-    image: mongo:latest
-    container_name: mongo-tsdb
-    restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: root
-      MONGO_INITDB_ROOT_PASSWORD: mongodb
-      MONG_INITDB_DATABASE: sensor
-    volumes:
-      - ./mongo-tsdb/mongo_data:/data/db
-    ports:
-      - '27017:27017'
-    networks:
-      - iot_net
+  #mongo-tsdb:
+  #  image: mongo:latest
+  #  container_name: mongo-tsdb
+  #  restart: always
+  #  environment:
+  #    MONGO_INITDB_ROOT_USERNAME: root
+  #    MONGO_INITDB_ROOT_PASSWORD: mongodb
+  #    MONG_INITDB_DATABASE: sensor
+  #  volumes:
+  #    - ./mongo-tsdb/mongo_data:/data/db
+  #  ports:
+  #    - '27017:27017'
+  #  networks:
+  #    - iot_net
 
   # Database Manager
-  mongo-express:
-    image: mongo-express:latest
-    container_name: mongo-express
-    restart: always
-    environment:
-      ME_CONFIG_MONGODB_SERVER: mongo-tsdb
-      ME_CONFIG_MONGODB_ADMINUSERNAME: root
-      ME_CONFIG_MONGODB_ADMINPASSWORD: mongodb
-      ME_CONFIG_BASICAUTH_USERNAME: admin
-      ME_CONFIG_BASICAUTH_PASSWORD: mongodb
-    volumes:
-      - ./mongo-tsdb/mongo_data:/data/db
-    ports: 
-      - '8081:8081'
-    depends_on:
-      - mongo-tsdb
-    networks:
-      - iot_net
+  #mongo-express:
+  #  image: mongo-express:latest
+  #  container_name: mongo-express
+  #  restart: always
+  #  environment:
+  #    ME_CONFIG_MONGODB_SERVER: mongo-tsdb
+  #    ME_CONFIG_MONGODB_ADMINUSERNAME: root
+  #    ME_CONFIG_MONGODB_ADMINPASSWORD: mongodb
+  #    ME_CONFIG_BASICAUTH_USERNAME: admin
+  #    ME_CONFIG_BASICAUTH_PASSWORD: mongodb
+  #  volumes:
+  #    - ./mongo-tsdb/mongo_data:/data/db
+  #  ports: 
+  #    - '8081:8081'
+  #  depends_on:
+  #    - mongo-tsdb
+  #  networks:
+  #    - iot_net
 
   # Database Exporter
-  mongo-exporter:
-    image: bitnami/mongodb-exporter:latest
-    container_name: mongo-exporter
-    restart: always
-    environment:
-      MONGODB_URI: mongodb://root:mongodb@mongodb:27017
-    ports:
-      - '9216:9216'
-    depends_on:
-      - mongo-tsdb
-    networks:
-      - iot_net
+  #mongo-exporter:
+  #  image: bitnami/mongodb-exporter:latest
+  #  container_name: mongo-exporter
+  #  restart: always
+  #  environment:
+  #    MONGODB_URI: mongodb://root:mongodb@mongodb:27017
+  #  ports:
+  #    - '9216:9216'
+  #  depends_on:
+  #    - mongo-tsdb
+  #  networks:
+  #    - iot_net
 
   # Metrics Provider/Scraper
   prometheus:
@@ -84,10 +82,70 @@ services:
       - '--storage.tsdb.path=/prometheus'
     ports:
       - '9090:9090'
-    depends_on:
-      - mongo-tsdb
     networks:
       - iot_net 
+
+  # Prometheus-Gateway/MQTT/Broker
+  #mosquitto:
+  #  image: eclipse-mosquitto
+  #  container_name: mosquitto
+  #  restart: always
+  #  volumes:
+  #    - ./prometheus-gateway/mosquitto/config:/mosquitto/config
+  #    - ./prometheus-gateway/mosquitto/data:/mosquitto/data
+  #    - ./prometheus-gateway/mosquitto/log:/mosquitto/log
+  #  ports:
+  #    - '1883:1883'
+  #  networks:
+  #    - iot_net
+  mosquitto:
+    build:
+      context: ./prometheus-gateway/mosquitto
+    container_name: mosquitto
+    restart: always
+    volumes:
+      - ./prometheus-gateway/mosquitto/config:/mosquitto/config
+      - ./prometheus-gateway/mosquitto/log:/mosquitto/log
+      - ./prometheus_data:/prometheus_data
+    ports:
+      - '1883:1883'
+    environment:
+      - TZ=UTC-8
+    networks:
+      - iot_net
+
+  # Prometheus-Gateway/MQTT/Subscriber
+  #mosquitto-subscriber:
+  #  build:
+  #    context: ./prometheus-gateway/mosquitto/mosquitto-sub
+  #  container_name: mosquitto-subscriber
+  #  restart: always
+  #  ports:
+  #    - "1884:1884"
+  #  networks:
+  #    - iot_net
+
+  # Prometheus-Gateway/POST
+  #http-post:
+  #  build:
+  #    context: ./prometheus-gateway/http
+  #  container_name: http-post
+  #  restart: always
+  #  ports:
+  #    - '1885:1885'
+  #  networks:
+  #    - iot_net
+
+  # Flask Application with Gunicorn
+#  prometheus-gateway:
+#    build:
+#      context: ./prometheus-gateway
+#    container_name: prometheus-gateway
+#    restart: always
+#    ports: 
+#      - '5000:5000'
+#    networks:
+#      - iot_net
 
 volumes:
   grafana-storage: {}

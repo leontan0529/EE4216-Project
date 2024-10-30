@@ -49,6 +49,12 @@ docker-compose up -d
 docker ps
 ```
 Alternatively, you may use **docker desktop** app to view your running containers
+
+## To view the various tools
+- To view Grafana (*grafana_ee4216*, visualisation tool): [localhost:3000](localhost:3000)
+- To view Prometheus (*prometheus*, endpoint scraper): [localhost:9090](localhost:9090)
+- To view Mongo Express (*mongo-express*, MongoDB GUI): [localhost:8081](localhost:8081)
+
 ### Miscellaneous Notes:
 - Pre-Requisite: Give permissions to all shell scripts
 ```bash
