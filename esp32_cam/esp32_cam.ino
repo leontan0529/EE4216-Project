@@ -12,6 +12,7 @@
 *********/
 
 #include "WiFi.h"
+#include <HTTPClient.h>
 #include "esp_camera.h"
 #include "esp_timer.h"
 #include "img_converters.h"
@@ -23,10 +24,16 @@
 #include <StringArray.h>
 #include <SPIFFS.h>
 #include <FS.h>
+#include "ESP32MQTTClient.h"
 
 // Replace with your network credentials
-const char* ssid = "khai_rizz";
-const char* password = "handsumboi";
+const char* ssid = "ESP32AP";
+const char* password = "EE4216ee";
+
+const char* mqttServer = "mqtt://192.168.4.2:1883";
+ESP32MQTTClient mqttClient; // all params are set later
+
+char *publishTopic = "img";
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -42,7 +49,7 @@ void IRAM_ATTR handleMagnetSeparated() {
 }
 
 // Photo File Name to save in SPIFFS
-#define FILE_PHOTO "/photo.jpg"
+#define FILE_PHOTO "/image.jpg"
 
 // OV2640 camera module pins (CAMERA_MODEL_AI_THINKER)
 #define PWDN_GPIO_NUM     32
@@ -116,6 +123,23 @@ void setup() {
     delay(1000);
     Serial.println("Connecting to WiFi...");
   }
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
+
+  // Wait for ESP32 to connect to MQTT server
+  Serial.print("Connecting to MQTT server.");
+  while (!mqttClient.isConnected()) {
+    Serial.print(".");
+    mqttClient.setURI(mqttServer);
+    mqttClient.enableLastWillMessage("lwt", "I am going offline");
+    mqttClient.setKeepAlive(30);
+
+    mqttClient.loopStart();
+    delay(1000);
+  }
+
+  Serial.println("\nConnected to MQTT server!");
+
   if (!SPIFFS.begin(true)) {
     Serial.println("An Error has occurred while mounting SPIFFS");
     ESP.restart();
@@ -194,7 +218,6 @@ void setup() {
 
   // Start server
   server.begin();
-
 }
 
 void loop() {
@@ -207,6 +230,8 @@ void loop() {
     if (takeNewPhoto) {
       capturePhotoSaveSpiffs();
       takeNewPhoto = false;
+
+      mqttClient.publish(publishTopic, "1");
     }
 
     while(alarmActivated) {
@@ -262,4 +287,76 @@ void capturePhotoSaveSpiffs( void ) {
     // check if file has been correctly saved in SPIFFS
     ok = checkPhoto(SPIFFS);
   } while ( !ok );
+}
+/*
+void postPhotoToServer() {
+    Serial.println("Checking for file...");
+    // Check if file exists on SPIFFS
+    if (!SPIFFS.exists("/image.jpg")) {  // Replace with your file name and path
+        Serial.println("File does not exist on SPIFFS");
+        return;
+    }
+
+    // Open the file for reading
+    File file = SPIFFS.open("/image.jpg", "r");  // Replace with your file name and path
+    if (!file) {
+        Serial.println("Failed to open file for reading");
+        return;
+    }
+
+    Serial.println("Opening file buffer...");
+    // Get the file size
+    size_t fileSize = file.size();
+    uint8_t *fileBuffer = new uint8_t[fileSize];
+
+    // Read file contents into the buffer
+    file.read(fileBuffer, fileSize);
+    file.close();
+
+    String boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
+    String body = "--" + boundary + "\r\n";
+    body += "Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n";
+    body += "Content-Type: image/jpeg\r\n\r\n";
+
+    HTTPClient http;
+    http.begin(serverURL);
+    http.addHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
+
+    int httpResponseCode = http.sendRequest("POST", (uint8_t*)body.c_str(), body.length());
+    if (httpResponseCode > 0) {
+        Serial.print("HTTP Response code: ");
+        Serial.println(httpResponseCode);
+    } else {
+        Serial.print("Error code: ");
+        Serial.println(httpResponseCode);
+    }
+
+    http.addHeader("Content-Length", String(fileSize + body.length() + 6));
+    httpResponseCode = http.sendRequest("POST", fileBuffer, fileSize);
+
+    if (httpResponseCode > 0) {
+        String response = http.getString();
+        Serial.println(httpResponseCode);
+        Serial.println(response);
+    } else {
+        Serial.print("Error on sending POST: ");
+        Serial.println(httpResponseCode);
+    }
+
+    http.end();
+    delete[] fileBuffer;
+}
+*/
+void onMqttConnect(esp_mqtt_client_handle_t client)
+{
+    if (mqttClient.isMyTurn(client)) // can be omitted if only one client
+    {
+        mqttClient.subscribe("#", [](const String &payload)
+                             { Serial.println(String("Message received: ")+String(payload)); });
+    }
+}
+
+void handleMQTT(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data){
+  auto *event = static_cast<esp_mqtt_event_handle_t>(event_data);
+  mqttClient.onEventCallback(event);
 }
