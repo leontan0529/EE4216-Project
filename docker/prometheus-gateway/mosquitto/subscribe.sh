@@ -32,3 +32,4 @@ done &
 mosquitto_sub -h localhost -t "lux" | while read -r payload; do
   save_data "lux" "$payload"
 done &
+
