@@ -26,38 +26,36 @@
 #include <FS.h>
 #include "ESP32MQTTClient.h"
 
-// Replace with your network credentials
+// Credentials for access point
 const char* ssid = "ESP32AP";
 const char* password = "EE4216ee";
 
+// MQTT details
 const char* mqttServer = "mqtt://192.168.4.2:1883";
-const char* serverName = "192.168.4.2";
-
+const char *publishTopic = "img";
 ESP32MQTTClient mqttClient; // all params are set later
 
-char *publishTopic = "img";
+// Server details for POST-ing image
+String serverName = "192.168.4.2";
+String serverPath = "/upload";  // Flask upload route
+const int serverPort = 8000;
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
 WiFiClient client;
 
-String serverPath = "/upload";  // Flask upload route
-const int serverPort = 8000;
-
-boolean takeNewPhoto = false;
 volatile bool alarmActivated = false;
 volatile bool magnetSeparated = false;
 
 void IRAM_ATTR handleMagnetSeparated() {
-    // Set the flag when the interrupt is triggered
+    // Set flags when the interrupt is triggered
     magnetSeparated = true;
-    takeNewPhoto = true;
+    alarmActivated = true;
 }
 
 void disableAlarm() {
-    magnetSeparated = true;
-    takeNewPhoto = true;
+    alarmActivated = false;
 }
 
 // Photo File Name to save in SPIFFS
@@ -220,7 +218,7 @@ void setup() {
   });
 
   server.on("/capture", HTTP_GET, [](AsyncWebServerRequest * request) {
-    takeNewPhoto = true;
+    capturePhotoSaveSpiffs();
     request->send_P(200, "text/plain", "Taking Photo");
   });
 
@@ -228,14 +226,14 @@ void setup() {
     request->send(SPIFFS, FILE_PHOTO, "image/jpg", false);
   });
 
-  server.on("/debug-alarm-on", HTTP_GET, [](AsyncWebServerRequest * request) {
-    handleMagnetSeparated();
-    request->send_P(200, "text/plain", "Alarm activated");
-  });
-
-  server.on("/debug-alarm-off", HTTP_GET, [](AsyncWebServerRequest * request) {
-    disableAlarm();
-    request->send_P(200, "text/plain", "Alarm deactivated");
+  server.on("/debug-alarm-toggle", HTTP_GET, [](AsyncWebServerRequest * request) {
+    if (alarmActivated) {
+      disableAlarm();
+      request->send_P(200, "text/plain", "Alarm deactivated");
+    } else {
+      handleMagnetSeparated();
+      request->send_P(200, "text/plain", "Alarm activated");
+    }
   });
 
   // Start server
@@ -245,25 +243,20 @@ void setup() {
 void loop() {
   if (magnetSeparated) {
     Serial.println("INTRUDER ALERT!!!");
-    magnetSeparated = false;  // Reset the flag
 
+    // Activate alarm
     digitalWrite(BUZZER_PIN, HIGH);
     
-    if (takeNewPhoto) {
-      sendPhoto();
-      takeNewPhoto = false;
-
-      mqttClient.publish(publishTopic, "1");
-    }
-
-      sendPhoto();
-      takeNewPhoto = false;
-
-      mqttClient.publish(publishTopic, "1");
+    sendPhoto();
 
     while(alarmActivated) {
       // Wait until alarm is deactivated remotely
     }
+
+    magnetSeparated = false;  // Reset the flag
+
+    digitalWrite(BUZZER_PIN, LOW);        // Disable buzzer once alarm is deactivated
+    Serial.println("Alarm deactivated.");
   }
 
   delay(50);
