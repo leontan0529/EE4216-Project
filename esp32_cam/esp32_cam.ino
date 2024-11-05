@@ -31,6 +31,8 @@ const char* ssid = "ESP32AP";
 const char* password = "EE4216ee";
 
 const char* mqttServer = "mqtt://192.168.4.2:1883";
+const char* serverName = "192.168.4.2";
+
 ESP32MQTTClient mqttClient; // all params are set later
 
 char *publishTopic = "img";
@@ -38,12 +40,22 @@ char *publishTopic = "img";
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
 
+WiFiClient client;
+
+String serverPath = "/upload";  // Flask upload route
+const int serverPort = 8000;
+
 boolean takeNewPhoto = false;
 volatile bool alarmActivated = false;
 volatile bool magnetSeparated = false;
 
 void IRAM_ATTR handleMagnetSeparated() {
     // Set the flag when the interrupt is triggered
+    magnetSeparated = true;
+    takeNewPhoto = true;
+}
+
+void disableAlarm() {
     magnetSeparated = true;
     takeNewPhoto = true;
 }
@@ -180,7 +192,7 @@ void setup() {
   config.pixel_format = PIXFORMAT_JPEG;
 
   if (psramFound()) {
-    config.frame_size = FRAMESIZE_UXGA;
+    config.frame_size = FRAMESIZE_SVGA;
     config.jpeg_quality = 10;
     config.fb_count = 2;
   } else {
@@ -216,6 +228,16 @@ void setup() {
     request->send(SPIFFS, FILE_PHOTO, "image/jpg", false);
   });
 
+  server.on("/debug-alarm-on", HTTP_GET, [](AsyncWebServerRequest * request) {
+    handleMagnetSeparated();
+    request->send_P(200, "text/plain", "Alarm activated");
+  });
+
+  server.on("/debug-alarm-off", HTTP_GET, [](AsyncWebServerRequest * request) {
+    disableAlarm();
+    request->send_P(200, "text/plain", "Alarm deactivated");
+  });
+
   // Start server
   server.begin();
 }
@@ -228,11 +250,16 @@ void loop() {
     digitalWrite(BUZZER_PIN, HIGH);
     
     if (takeNewPhoto) {
-      capturePhotoSaveSpiffs();
+      sendPhoto();
       takeNewPhoto = false;
 
       mqttClient.publish(publishTopic, "1");
     }
+
+      sendPhoto();
+      takeNewPhoto = false;
+
+      mqttClient.publish(publishTopic, "1");
 
     while(alarmActivated) {
       // Wait until alarm is deactivated remotely
@@ -288,65 +315,84 @@ void capturePhotoSaveSpiffs( void ) {
     ok = checkPhoto(SPIFFS);
   } while ( !ok );
 }
-/*
-void postPhotoToServer() {
-    Serial.println("Checking for file...");
-    // Check if file exists on SPIFFS
-    if (!SPIFFS.exists("/image.jpg")) {  // Replace with your file name and path
-        Serial.println("File does not exist on SPIFFS");
-        return;
+
+void sendPhoto() {
+  String getAll;
+  String getBody;
+
+  camera_fb_t * fb = NULL;
+  fb = esp_camera_fb_get();
+  if(!fb) {
+    Serial.println("Camera capture failed");
+    delay(1000);
+    return;
+  }
+  
+  Serial.println("Connecting to server: " + serverName);
+
+  if (client.connect(serverName.c_str(), serverPort)) {
+    Serial.println("Connection successful!");    
+    String head = "--ESP32\r\nContent-Disposition: form-data; name=\"imageFile\"; filename=\"esp32-cam.jpg\"\r\nContent-Type: image/jpeg\r\n\r\n";
+    String tail = "\r\n--ESP32--\r\n";
+
+    uint16_t imageLen = fb->len;
+    uint16_t extraLen = head.length() + tail.length();
+    uint16_t totalLen = imageLen + extraLen;
+  
+    client.println("POST " + serverPath + " HTTP/1.1");
+    client.println("Host: " + serverName);
+    client.println("Content-Length: " + String(totalLen));
+    client.println("Content-Type: multipart/form-data; boundary=ESP32");
+    client.println();
+    client.print(head);
+  
+    uint8_t *fbBuf = fb->buf;
+    size_t fbLen = fb->len;
+    for (size_t n=0; n<fbLen; n=n+1024) {
+      if (n+1024 < fbLen) {
+        client.write(fbBuf, 1024);
+        fbBuf += 1024;
+      }
+      else if (fbLen%1024>0) {
+        size_t remainder = fbLen%1024;
+        client.write(fbBuf, remainder);
+      }
+    }   
+    client.print(tail);
+    
+    esp_camera_fb_return(fb);
+    
+    int timoutTimer = 10000;
+    long startTimer = millis();
+    boolean state = false;
+    
+    while ((startTimer + timoutTimer) > millis()) {
+      Serial.print(".");
+      delay(100);      
+      while (client.available()) {
+        char c = client.read();
+        if (c == '\n') {
+          if (getAll.length()==0) { state=true; }
+          getAll = "";
+        }
+        else if (c != '\r') { getAll += String(c); }
+        if (state==true) { getBody += String(c); }
+        startTimer = millis();
+      }
+      if (getBody.length()>0) { break; }
     }
+    Serial.println();
+    client.stop();
+    Serial.println(getBody);
+  }
+  else {
+    getBody = "Connection to " + serverName +  " failed.";
+    Serial.println(getBody);
+  }
 
-    // Open the file for reading
-    File file = SPIFFS.open("/image.jpg", "r");  // Replace with your file name and path
-    if (!file) {
-        Serial.println("Failed to open file for reading");
-        return;
-    }
-
-    Serial.println("Opening file buffer...");
-    // Get the file size
-    size_t fileSize = file.size();
-    uint8_t *fileBuffer = new uint8_t[fileSize];
-
-    // Read file contents into the buffer
-    file.read(fileBuffer, fileSize);
-    file.close();
-
-    String boundary = "----WebKitFormBoundary7MA4YWxkTrZu0gW";
-    String body = "--" + boundary + "\r\n";
-    body += "Content-Disposition: form-data; name=\"file\"; filename=\"image.jpg\"\r\n";
-    body += "Content-Type: image/jpeg\r\n\r\n";
-
-    HTTPClient http;
-    http.begin(serverURL);
-    http.addHeader("Content-Type", "multipart/form-data; boundary=" + boundary);
-
-    int httpResponseCode = http.sendRequest("POST", (uint8_t*)body.c_str(), body.length());
-    if (httpResponseCode > 0) {
-        Serial.print("HTTP Response code: ");
-        Serial.println(httpResponseCode);
-    } else {
-        Serial.print("Error code: ");
-        Serial.println(httpResponseCode);
-    }
-
-    http.addHeader("Content-Length", String(fileSize + body.length() + 6));
-    httpResponseCode = http.sendRequest("POST", fileBuffer, fileSize);
-
-    if (httpResponseCode > 0) {
-        String response = http.getString();
-        Serial.println(httpResponseCode);
-        Serial.println(response);
-    } else {
-        Serial.print("Error on sending POST: ");
-        Serial.println(httpResponseCode);
-    }
-
-    http.end();
-    delete[] fileBuffer;
+  return;
 }
-*/
+
 void onMqttConnect(esp_mqtt_client_handle_t client)
 {
     if (mqttClient.isMyTurn(client)) // can be omitted if only one client
