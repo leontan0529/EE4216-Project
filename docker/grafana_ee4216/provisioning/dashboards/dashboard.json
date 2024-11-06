@@ -18,7 +18,6 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 1,
   "links": [],
   "panels": [
     {
@@ -36,8 +35,9 @@
     },
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "grafana"
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "my_unique_uid"
       },
       "fieldConfig": {
         "defaults": {
@@ -85,14 +85,45 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.2.1",
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "my_unique_uid"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "Select temperature from th_data;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
       "title": "Current Temperature",
       "type": "gauge"
     },
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "grafana"
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "my_unique_uid"
       },
       "fieldConfig": {
         "defaults": {
@@ -140,14 +171,45 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.2.1",
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "my_unique_uid"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "Select humidity from th_data;",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
       "title": "Current Humidity",
       "type": "gauge"
     },
     {
       "datasource": {
-        "type": "datasource",
-        "uid": "grafana"
+        "default": true,
+        "type": "grafana-postgresql-datasource",
+        "uid": "my_unique_uid"
       },
       "fieldConfig": {
         "defaults": {
@@ -196,9 +258,122 @@
         "showThresholdMarkers": true,
         "sizing": "auto"
       },
-      "pluginVersion": "11.2.1",
+      "pluginVersion": "11.2.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "grafana-postgresql-datasource",
+            "uid": "my_unique_uid"
+          },
+          "editorMode": "code",
+          "format": "table",
+          "rawQuery": true,
+          "rawSql": "Select brightness from mb_data; ",
+          "refId": "A",
+          "sql": {
+            "columns": [
+              {
+                "parameters": [],
+                "type": "function"
+              }
+            ],
+            "groupBy": [
+              {
+                "property": {
+                  "type": "string"
+                },
+                "type": "groupBy"
+              }
+            ],
+            "limit": 50
+          }
+        }
+      ],
       "title": "Current Brightness",
       "type": "gauge"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "my_unique_uid"
+      },
+      "description": "With HausAI, we will gather the lastest information of your living room to provide you timely and useful suggestions to ensure that your living room is conducive for all.",
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
+      "id": 14,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "title": "HausAI",
+      "type": "timeseries"
     },
     {
       "collapsed": false,
@@ -206,7 +381,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 17
       },
       "id": 9,
       "panels": [],
@@ -304,7 +479,7 @@
         "h": 10,
         "w": 8,
         "x": 0,
-        "y": 10
+        "y": 18
       },
       "id": 1,
       "options": {
@@ -430,7 +605,7 @@
         "h": 10,
         "w": 8,
         "x": 8,
-        "y": 10
+        "y": 18
       },
       "id": 2,
       "options": {
@@ -556,7 +731,7 @@
         "h": 10,
         "w": 8,
         "x": 16,
-        "y": 10
+        "y": 18
       },
       "id": 6,
       "options": {
@@ -595,7 +770,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 20
+        "y": 28
       },
       "id": 5,
       "panels": [],
@@ -604,100 +779,14 @@
     },
     {
       "datasource": {
-        "default": true,
         "type": "grafana-testdata-datasource",
         "uid": "fdztd0e4qwow0c"
       },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "custom": {
-            "fillOpacity": 70,
-            "hideFrom": {
-              "legend": false,
-              "tooltip": false,
-              "viz": false
-            },
-            "lineWidth": 1
-          },
-          "mappings": [
-            {
-              "options": {
-                "0": {
-                  "index": 0,
-                  "text": "OK"
-                },
-                "1": {
-                  "index": 1,
-                  "text": "INTRUDER"
-                }
-              },
-              "type": "value"
-            }
-          ],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green"
-              },
-              {
-                "color": "red",
-                "value": 1
-              }
-            ]
-          }
-        },
-        "overrides": []
-      },
       "gridPos": {
-        "h": 8,
+        "h": 14,
         "w": 12,
         "x": 0,
-        "y": 21
-      },
-      "id": 11,
-      "options": {
-        "colWidth": 0.9,
-        "legend": {
-          "displayMode": "list",
-          "placement": "bottom",
-          "showLegend": true
-        },
-        "rowHeight": 0.9,
-        "showValue": "auto",
-        "tooltip": {
-          "mode": "single",
-          "sort": "none"
-        }
-      },
-      "pluginVersion": "11.2.1",
-      "targets": [
-        {
-          "datasource": {
-            "type": "grafana-testdata-datasource",
-            "uid": "fdztd0e4qwow0c"
-          },
-          "refId": "A",
-          "scenarioId": "csv_metric_values",
-          "stringInput": "1,0,0,1"
-        }
-      ],
-      "title": "Intrusion Detection",
-      "type": "status-history"
-    },
-    {
-      "datasource": {
-        "type": "grafana-testdata-datasource",
-        "uid": "fdztd0e4qwow0c"
-      },
-      "gridPos": {
-        "h": 8,
-        "w": 12,
-        "x": 12,
-        "y": 21
+        "y": 29
       },
       "id": 12,
       "options": {
@@ -709,8 +798,34 @@
         "content": "<img src=\"https://safeguardsystems.co.uk/wp-content/uploads/2021/11/Apartment-block-security.jpg\" alt=\"Description\" width=\"600\" height=\"400\">\n",
         "mode": "html"
       },
-      "pluginVersion": "11.2.1",
+      "pluginVersion": "11.2.0",
       "title": "DoorCam",
+      "type": "text"
+    },
+    {
+      "datasource": {
+        "type": "grafana-postgresql-datasource",
+        "uid": "my_unique_uid"
+      },
+      "description": "[WARNING] Intruder at the door. Disarm the alarm at your own discretion.\nPress to disarm door alarm.",
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 12,
+        "y": 29
+      },
+      "id": 13,
+      "options": {
+        "code": {
+          "language": "plaintext",
+          "showLineNumbers": false,
+          "showMiniMap": false
+        },
+        "content": "<div id=\"controlButton\">\n  <button id=\"toggleButton\" onclick=\"turnOff()\" style=\"padding: 10px 20px; font-size: 16px; background-color: red; color: white; border: none; cursor: pointer;\">\n    Disarm Alarm\n  </button>\n</div>\n\n<script>\n  function turnOff() {\n    // Set ESP32 IP and fixed \"off\" state\n    const esp32IP = \"http://192.168.4.2/handleControl\";  // Replace with your ESP32 IP\n    const state = \"off\";\n\n    // Send the HTTP POST request to ESP32 with the state \"off\"\n    fetch(`${esp32IP}?state=${state}`, {\n      method: \"POST\",\n      headers: {\n        \"Content-Type\": \"application/x-www-form-urlencoded\"\n      }\n    })\n    .then(response => {\n      if (response.ok) {\n        console.log(\"ESP32 state set to: off\");\n      } else {\n        console.error(\"Error sending request to ESP32\");\n      }\n    })\n    .catch(error => {\n      console.error(\"Network error:\", error);\n    });\n  }\n</script>",
+        "mode": "html"
+      },
+      "pluginVersion": "11.2.0",
+      "title": "Disarm Alarm",
       "type": "text"
     }
   ],
@@ -728,6 +843,6 @@
   "timezone": "browser",
   "title": "The Smart Haus",
   "uid": "cdzte3nlkywaoa",
-  "version": 10,
+  "version": 6,
   "weekStart": ""
 }

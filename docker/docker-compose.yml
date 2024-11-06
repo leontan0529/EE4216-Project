@@ -1,6 +1,7 @@
 #version: '3.8'
 services:
-  grafana:
+  # Dashboard
+  grafana_ee4216:
     image: grafana/grafana
     container_name: grafana_ee4216
     restart: always
@@ -14,11 +15,65 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./grafana_ee4216/provisioning/:/etc/grafana/provisioning/
+    environment:
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
+    networks:
+      - iot_net
+
+  # Metrics Provider/Scraper
+  prometheus:
+    image: prom/prometheus
+    container_name: prometheus
+    restart: always
+    volumes:
+      - prometheus:/prometheus
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+#      - ./prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+    ports:
+      - '9090:9090'
+    networks:
+      - iot_net 
+
+  # Prometheus-Gateway/Mosquitto
+  mosquitto:
+    build:
+      context: ./prometheus-gateway/mosquitto
+    container_name: mosquitto
+    restart: always
+    volumes:
+      - ./prometheus-gateway/mosquitto/config:/mosquitto/config
+      - ./prometheus-gateway/mosquitto/log:/mosquitto/log
+      - ./prometheus_data:/prometheus_data
+    ports:
+      - '1883:1883'
+    environment:
+      - TZ=UTC-8
+    networks:
+      - iot_net
+
+  # Prometheus-Gateway/HTTP
+  http-post:
+    build:
+      context: ./prometheus-gateway/http
+    container_name: http-post
+    restart: always
+    volumes:
+      - ./prometheus_data:/prometheus_data
+      - ./grafana_ee4216/provisioning/datasources/images:/images
+    ports:
+      - '1884:1884'
+    environment:
+      - TZ=UTC-8
     networks:
       - iot_net
 
 volumes:
   grafana-storage: {}
+  prometheus: {}
 
 networks:
   iot_net:
+    driver: bridge

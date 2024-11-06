@@ -1,0 +1,21 @@
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+# {test_stage} Load alert rules
+#rule_files:
+#  - "alert-rules.yml"
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['prometheus:9090']
+  #- job_name: 'mosquitto'
+  #  static_configs:
+  #    - targets: ['mosquitto:1883']
+  #- job_name: 'http-post'
+  #  static_configs:
+  #    - targets: ['http-post:1884']
+  - job_name: 'grafana_ee4216'
+    static_configs:
+      - targets: ['grafana_ee4216:3000']

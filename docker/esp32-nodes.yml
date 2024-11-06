@@ -1,0 +1,6 @@
+devices:
+  esp32_sensor:
+    ip: "192.168.0.1"
+  esp32_camera:
+    ip: ""
+
