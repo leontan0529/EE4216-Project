@@ -1,61 +1,64 @@
+from flask import Flask, request
+import numpy as np
+import cv2
 import os
-import time
-import requests
 from datetime import datetime
-import paho.mqtt.client as mqtt
 
-# Environment variables
-mqtt_broker = os.getenv("MQTT_BROKER", "localhost")
-mqtt_topic = os.getenv("MQTT_TOPIC", "img")
-esp32_server_url = os.getenv("ESP32_SERVER", "http://192.168.4.5/saved-photo")  # Replace with actual ESP32 IP
+app = Flask(__name__)
 
-# Callback when connecting to MQTT broker
-def on_connect(client, userdata, flags, rc):
-    print("Connected to MQTT broker with result code", rc)
-    # Subscribe to the specified topic
-    client.subscribe(mqtt_topic)
+UPLOAD_FOLDER = '/prometheus_data'
+UPLOAD_PARENT = 'int'
+GENERIC_FOLDER = '/images'
+os.makedirs(UPLOAD_FOLDER, exist_ok=True)
+os.makedirs(GENERIC_FOLDER, exist_ok=True)
 
-# Callback when a message is received
-def on_message(client, userdata, msg):
-    print("Message received on topic:", msg.topic)
-    print("Message:", msg.payload.decode())
+def save_img(img):
+    # Generate a directory path with the current date and hour
+    current_time = datetime.now()
+    date_path = current_time.strftime('%Y-%m-%d/%H')
+    save_path = os.path.join(UPLOAD_FOLDER, date_path, UPLOAD_PARENT)
+    os.makedirs(save_path, exist_ok=True)
 
-    # Perform HTTP GET request to ESP32 server
-    try:
-        response = requests.get(esp32_server_url) 
-        if response.status_code == 200:
-            # Get current date and time for directory structure and filename
-            now = datetime.now()
-            date_str = now.strftime("%Y-%m-%d")
-            hour_str = now.strftime("%H")
-            timestamp_str = now.strftime("%Y%m%d_%H%M%S")
+    # Save the file with its original filename in the created directory
+    filename = current_time.strftime('%Y%m%d_%H%M%S') + '.jpeg'
+    cv2.imwrite(os.path.join(save_path, filename), img)
+    print("Image Saved as {filename}.") # debug
 
-            # Directory path and filename
-            save_dir = f"/prometheus_data/{date_str}/{hour_str}"
-            os.makedirs(save_dir, exist_ok=True)  # Create directories if they don't exist
-            file_path = os.path.join(save_dir, f"{timestamp_str}.jpeg")
+    '''
+    # Save the file with another filename in another location
+    another_save_path = os.path.join('/image')
+    os.makedirs(another_save_path, exist_ok=True)
+    another_filename = 'image.jpeg'
+    cv2.imwrite(os.path.join(another_save_path, another_filename), img)
+    '''
+    
 
-            # Save the image
-            with open(file_path, "wb") as f:
-                f.write(response.content)
-            print(f"Image saved to {file_path}")
+def grafana_img(img):
+    # Save the file with a generic filename in the created directory
+    save_dupe_path = os.path.join(GENERIC_FOLDER)
+    os.makedirs(save_dupe_path, exist_ok=True)
+    imagename = 'image.jpeg'
+    cv2.imwrite(os.path.join(save_dupe_path, imagename), img)
+    print("Updated Grafana Image.") # debug
 
-        else:
-            print("Failed to retrieve image. Status code:", response.status_code)
-    except requests.RequestException as e:
-        print("Error in HTTP GET request:", e)
+@app.route('/upload', methods=['POST','GET'])
+def upload():
+    received = request
+    img = None
+    if received.files:
+        print(received.files['imageFile'])
+        #convert string of image data to uint8
+        file  = received.files['imageFile']
+        nparr = np.fromstring(file.read(), np.uint8)
 
-# Set up the MQTT client
-client = mqtt.Client()
-client.on_connect = on_connect
-client.on_message = on_message
+        # decode image
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        save_img(img)
+        grafana_img(img)
 
-# Connect to the MQTT broker
-client.connect(mqtt_broker, 1883, 60)
+        return "[SUCCESS] Image Received", 200
+    else:
+        return "[FAILED] Image Not Received", 400
 
-# Blocking loop to process network traffic, dispatch callbacks, and handle reconnections
-client.loop_start()
-
-# Keep the container running
-while True:
-    time.sleep(10)
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=1884)

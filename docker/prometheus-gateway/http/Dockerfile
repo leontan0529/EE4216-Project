@@ -1,17 +1,17 @@
-# Use the official Alpine image as the base image
-FROM alpine:latest
+# Use an official Python runtime as a base image
+FROM python:3.9-slim
 
-# Install Mosquitto client and curl
-RUN apk add --no-cache mosquitto-clients curl
-
-# Set the working directory in the container
+# Set working directory
 WORKDIR /app
 
-# Copy the shell script into the container
+# Copy the current directory contents into the container at /app
 COPY . /app
 
-# Make the shell script executable
-RUN chmod +x ./curl.sh
+# Install dependencies
+RUN pip install -r requirements.txt
 
-# Set the entrypoint to the shell script
-ENTRYPOINT ["./curl.sh"]
+# Expose the port for Flask
+EXPOSE 1884
+
+# Run the application
+CMD ["python", "app.py"]

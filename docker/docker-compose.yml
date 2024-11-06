@@ -15,6 +15,8 @@ services:
     volumes:
       - grafana-storage:/var/lib/grafana
       - ./grafana_ee4216/provisioning/:/etc/grafana/provisioning/
+    environment:
+      - GF_PANELS_DISABLE_SANITIZE_HTML=true
     networks:
       - iot_net
 
@@ -53,40 +55,20 @@ services:
       - iot_net
 
   # Prometheus-Gateway/HTTP
-  #http-post:
-  #  build:
-  #    context: ./prometheus-gateway/http
-  #  container_name: http-post
-  #  restart: always
-  #  volumes:
-  #    - ./prometheus_data:/prometheus_data
-  #  ports:
-  #    - '1884:1884'
-  #  environment:
-  #    - TZ=UTC-8
-  #  networks:
-  #    - iot_net
-  #http-get:
-  #  build:
-  #    context: ./prometheus-gateway/http
-  #  container_name: http-get
-  #  depends_on:
-  #    - mosquitto
-  #  restart: always
-  #  volumes: 
-  #    - ./prometheus_data:/prometheus_data
-  #  ports:
-  #    - '1884:1884'
-  #  environment:
-  #    - TZ=UTC-8
-  #    - MQTT_BROKER=mosquitto
-  #    - MQTT_TOPIC=img
-  #    - ESP32_SERVER=http://192.168.4.5/saved-photo
-  #  networks:
-  #    - iot_net
-  #  extra_hosts:
-  #    - "host.docker.internal:host-gateway"
-  #    - "other-device:192.168.4.5"
+  http-post:
+    build:
+      context: ./prometheus-gateway/http
+    container_name: http-post
+    restart: always
+    volumes:
+      - ./prometheus_data:/prometheus_data
+      - ./grafana_ee4216/provisioning/datasources/images:/images
+    ports:
+      - '1884:1884'
+    environment:
+      - TZ=UTC-8
+    networks:
+      - iot_net
 
 volumes:
   grafana-storage: {}
