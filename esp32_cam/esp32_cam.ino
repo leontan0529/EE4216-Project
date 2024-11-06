@@ -35,7 +35,6 @@ IPAddress gateway(192, 168, 4, 1);
 IPAddress subnet(255, 255, 255, 0);
 
 // Server details for POST-ing image
-//String serverName = "192.168.4.2";
 String serverName = "192.168.4.3";
 String serverPath = "/upload";  // Flask upload route
 const int serverPort = 1884;
@@ -211,6 +210,18 @@ void setup() {
 
   server.on("/saved-photo", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send(SPIFFS, FILE_PHOTO, "image/jpg", false);
+  });
+
+  server.on("/control", HTTP_POST, [](AsyncWebServerRequest *request) {
+    // Print a message to the Serial Monitor
+    Serial.println("Received control command!");
+    if (alarmActivated) {
+      disableAlarm();
+      request->send_P(200, "text/plain", "Alarm deactivated");
+    } else {
+      handleMagnetSeparated();
+      request->send_P(200, "text/plain", "Alarm activated");
+    }
   });
 
   server.on("/debug-alarm-toggle", HTTP_GET, [](AsyncWebServerRequest * request) {
