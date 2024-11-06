@@ -24,21 +24,21 @@
 #include <StringArray.h>
 #include <SPIFFS.h>
 #include <FS.h>
-#include "ESP32MQTTClient.h"
 
 // Credentials for access point
-const char* ssid = "ESP32AP";
-const char* password = "EE4216ee";
+const char* ssid = "ESP32-AP";
+const char* password = "12345678";
 
-// MQTT details
-const char* mqttServer = "mqtt://192.168.4.2:1883";
-const char *publishTopic = "img";
-ESP32MQTTClient mqttClient; // all params are set later
+// Assign static IP address to cam
+IPAddress local_IP(192, 168, 4, 2);
+IPAddress gateway(192, 168, 4, 1);
+IPAddress subnet(255, 255, 255, 0);
 
 // Server details for POST-ing image
-String serverName = "192.168.4.2";
+//String serverName = "192.168.4.2";
+String serverName = "192.168.4.3";
 String serverPath = "/upload";  // Flask upload route
-const int serverPort = 8000;
+const int serverPort = 1884;
 
 // Create AsyncWebServer object on port 80
 AsyncWebServer server(80);
@@ -127,6 +127,11 @@ void setup() {
   // Serial port for debugging purposes
   Serial.begin(115200);
 
+  // Configure the ESP32 to use a static IP
+  if (!WiFi.config(local_IP, gateway, subnet)) {
+    Serial.println("Failed to configure static IP!");
+  }
+
   // Connect to Wi-Fi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
@@ -136,20 +141,6 @@ void setup() {
   Serial.println("IP address: ");
   Serial.println(WiFi.localIP());
 
-  // Wait for ESP32 to connect to MQTT server
-  Serial.print("Connecting to MQTT server.");
-  while (!mqttClient.isConnected()) {
-    Serial.print(".");
-    mqttClient.setURI(mqttServer);
-    mqttClient.enableLastWillMessage("lwt", "I am going offline");
-    mqttClient.setKeepAlive(30);
-
-    mqttClient.loopStart();
-    delay(1000);
-  }
-
-  Serial.println("\nConnected to MQTT server!");
-
   if (!SPIFFS.begin(true)) {
     Serial.println("An Error has occurred while mounting SPIFFS");
     ESP.restart();
@@ -158,10 +149,6 @@ void setup() {
     delay(500);
     Serial.println("SPIFFS mounted successfully");
   }
-
-  // Print ESP32 Local IP Address
-  Serial.print("IP Address: http://");
-  Serial.println(WiFi.localIP());
 
   // Turn-off the 'brownout detector'
   WRITE_PERI_REG(RTC_CNTL_BROWN_OUT_REG, 0);
@@ -384,18 +371,4 @@ void sendPhoto() {
   }
 
   return;
-}
-
-void onMqttConnect(esp_mqtt_client_handle_t client)
-{
-    if (mqttClient.isMyTurn(client)) // can be omitted if only one client
-    {
-        mqttClient.subscribe("#", [](const String &payload)
-                             { Serial.println(String("Message received: ")+String(payload)); });
-    }
-}
-
-void handleMQTT(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data){
-  auto *event = static_cast<esp_mqtt_event_handle_t>(event_data);
-  mqttClient.onEventCallback(event);
 }
