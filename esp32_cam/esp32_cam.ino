@@ -11,6 +11,7 @@
   copies or substantial portions of the Software.
 *********/
 
+#include <Adafruit_NeoPixel.h>
 #include "WiFi.h"
 #include <HTTPClient.h>
 #include "esp_camera.h"
@@ -82,6 +83,10 @@ void disableAlarm() {
 #define SENSOR_PIN  14
 #define LED_PIN     15
 
+#define NUMPIXELS 8
+
+Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML><html>
 <head>
@@ -126,18 +131,24 @@ void setup() {
   // Serial port for debugging purposes
   Serial.begin(115200);
 
+  strip.begin();
+  strip.setBrightness(50); // Set brightness to 50 out of 255
+  strip.setPixelColor(0, strip.Color(0, 0, 150)); // Set 1st pixel to blue
+  strip.show(); // Initialize all pixels to 'off'
+
   // Configure the ESP32 to use a static IP
   if (!WiFi.config(local_IP, gateway, subnet)) {
     Serial.println("Failed to configure static IP!");
   }
 
+  Serial.print("Connecting to WiFi...");
   // Connect to Wi-Fi
   WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED) {
     delay(1000);
-    Serial.println("Connecting to WiFi...");
+    Serial.print(".");
   }
-  Serial.println("IP address: ");
+  Serial.println("\nIP address: ");
   Serial.println(WiFi.localIP());
 
   if (!SPIFFS.begin(true)) {
@@ -198,6 +209,9 @@ void setup() {
   pinMode(BUZZER_PIN, OUTPUT);
   pinMode(LED_PIN, OUTPUT);
 
+  strip.setPixelColor(0, strip.Color(0, 150, 0)); // Set 1st pixel to green
+  strip.show(); // Initialize all pixels to 'off'
+
   // Route for root / web page
   server.on("/", HTTP_GET, [](AsyncWebServerRequest * request) {
     request->send_P(200, "text/html", index_html);
@@ -245,6 +259,10 @@ void loop() {
     // Activate alarm
     digitalWrite(BUZZER_PIN, HIGH);
     
+    // Activate LED
+    strip.setPixelColor(0, strip.Color(150, 0, 0)); // Set 1st pixel to red
+    strip.show(); // Initialize all pixels to 'off'
+
     sendPhoto();
 
     while(alarmActivated) {
@@ -254,6 +272,11 @@ void loop() {
     magnetSeparated = false;  // Reset the flag
 
     digitalWrite(BUZZER_PIN, LOW);        // Disable buzzer once alarm is deactivated
+
+    // Reset LED
+    strip.setPixelColor(0, strip.Color(0, 150, 0)); // Set 1st pixel to green
+    strip.show(); // Initialize all pixels to 'off'
+
     Serial.println("Alarm deactivated.");
   }
 
