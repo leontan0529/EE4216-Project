@@ -21,6 +21,19 @@ services:
     networks:
       - iot_net
 
+  # Mock Insertion
+  mock_insertion:
+    build:
+      context: ./mock_insertion
+    container_name: mock_insertion
+    restart: always
+    volumes:
+      - ./prometheus_data:/prometheus_data
+    environment:
+      - TZ=UTC-8
+    networks:
+      - iot_net
+
   # Prometheus/Prometheus
   prometheus:
     image: prom/prometheus
