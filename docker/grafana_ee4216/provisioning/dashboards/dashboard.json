@@ -21,12 +21,109 @@
   "links": [],
   "panels": [
     {
+      "datasource": {
+        "default": false,
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisBorderShow": false,
+            "axisCenteredZero": false,
+            "axisColorMode": "text",
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "barWidthFactor": 0.6,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "insertNulls": false,
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 0
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom",
+          "showLegend": true
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
+          },
+          "editorMode": "code",
+          "expr": "temperature{job=\"prometheus-exporter\"}",
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Panel Title",
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 8
       },
       "id": 10,
       "panels": [],
@@ -35,9 +132,9 @@
     },
     {
       "datasource": {
-        "default": true,
-        "type": "grafana-postgresql-datasource",
-        "uid": "my_unique_uid"
+        "default": false,
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -67,7 +164,7 @@
         "h": 8,
         "w": 8,
         "x": 0,
-        "y": 1
+        "y": 9
       },
       "id": 3,
       "options": {
@@ -89,31 +186,20 @@
       "targets": [
         {
           "datasource": {
-            "type": "grafana-postgresql-datasource",
-            "uid": "my_unique_uid"
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
           },
+          "disableTextWrap": false,
           "editorMode": "code",
-          "format": "table",
-          "rawQuery": true,
-          "rawSql": "Select temperature from th_data;",
-          "refId": "A",
-          "sql": {
-            "columns": [
-              {
-                "parameters": [],
-                "type": "function"
-              }
-            ],
-            "groupBy": [
-              {
-                "property": {
-                  "type": "string"
-                },
-                "type": "groupBy"
-              }
-            ],
-            "limit": 50
-          }
+          "expr": "temperature{job=\"prometheus-exporter\"}",
+          "fullMetaSearch": false,
+          "hide": false,
+          "includeNullMetadata": true,
+          "instant": false,
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "B",
+          "useBackend": false
         }
       ],
       "title": "Current Temperature",
@@ -153,7 +239,7 @@
         "h": 8,
         "w": 8,
         "x": 8,
-        "y": 1
+        "y": 9
       },
       "id": 4,
       "options": {
@@ -240,7 +326,7 @@
         "h": 8,
         "w": 8,
         "x": 16,
-        "y": 1
+        "y": 9
       },
       "id": 7,
       "options": {
@@ -357,7 +443,7 @@
         "h": 8,
         "w": 24,
         "x": 0,
-        "y": 9
+        "y": 17
       },
       "id": 14,
       "options": {
@@ -381,7 +467,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 17
+        "y": 25
       },
       "id": 9,
       "panels": [],
@@ -391,8 +477,8 @@
     {
       "datasource": {
         "default": false,
-        "type": "datasource",
-        "uid": "grafana"
+        "type": "prometheus",
+        "uid": "PBFA97CFB590B2093"
       },
       "fieldConfig": {
         "defaults": {
@@ -479,7 +565,7 @@
         "h": 10,
         "w": 8,
         "x": 0,
-        "y": 18
+        "y": 26
       },
       "id": 1,
       "options": {
@@ -497,15 +583,25 @@
           "sort": "none"
         }
       },
+      "pluginVersion": "11.2.0",
       "targets": [
         {
-          "channel": "plugin/testdata/random-20Hz-stream",
           "datasource": {
-            "type": "datasource",
-            "uid": "grafana"
+            "type": "prometheus",
+            "uid": "PBFA97CFB590B2093"
           },
-          "queryType": "randomWalk",
-          "refId": "A"
+          "disableTextWrap": false,
+          "editorMode": "code",
+          "exemplar": false,
+          "expr": "temperature{job=\"prometheus-exporter\"}",
+          "format": "time_series",
+          "fullMetaSearch": false,
+          "includeNullMetadata": true,
+          "instant": true,
+          "legendFormat": "__auto",
+          "range": false,
+          "refId": "A",
+          "useBackend": false
         }
       ],
       "title": "Temperature",
@@ -605,7 +701,7 @@
         "h": 10,
         "w": 8,
         "x": 8,
-        "y": 18
+        "y": 26
       },
       "id": 2,
       "options": {
@@ -731,7 +827,7 @@
         "h": 10,
         "w": 8,
         "x": 16,
-        "y": 18
+        "y": 26
       },
       "id": 6,
       "options": {
@@ -770,7 +866,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 28
+        "y": 36
       },
       "id": 5,
       "panels": [],
@@ -786,7 +882,7 @@
         "h": 14,
         "w": 12,
         "x": 0,
-        "y": 29
+        "y": 37
       },
       "id": 12,
       "options": {
@@ -812,7 +908,7 @@
         "h": 3,
         "w": 4,
         "x": 12,
-        "y": 29
+        "y": 37
       },
       "id": 13,
       "options": {
@@ -836,13 +932,13 @@
     "list": []
   },
   "time": {
-    "from": "now-24h",
+    "from": "now-6h",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "browser",
   "title": "The Smart Haus",
   "uid": "cdzte3nlkywaoa",
-  "version": 6,
+  "version": 5,
   "weekStart": ""
 }
