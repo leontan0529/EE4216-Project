@@ -24,15 +24,6 @@ def save_img(img):
     cv2.imwrite(os.path.join(save_path, filename), img)
     print("Image Saved as {filename}.") # debug
 
-    '''
-    # Save the file with another filename in another location
-    another_save_path = os.path.join('/image')
-    os.makedirs(another_save_path, exist_ok=True)
-    another_filename = 'image.jpeg'
-    cv2.imwrite(os.path.join(another_save_path, another_filename), img)
-    '''
-    
-
 def grafana_img(img):
     # Save the file with a generic filename in the created directory
     save_dupe_path = os.path.join(GENERIC_FOLDER)

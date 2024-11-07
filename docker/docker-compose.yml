@@ -67,6 +67,21 @@ services:
     networks:
       - iot_net
 
+  # Prometheus/Prometheus-Nginx
+  prometheus-nginx:
+    build:
+      context: ./prometheus/prometheus-nginx
+    container_name: prometheus-nginx
+    restart: always
+    volumes:
+      - ./prometheus_data/images:/etc/nginx/html/data/images
+    ports:
+      - '9093:80'
+    environment:
+      - TZ=UTC-8
+    networks:
+      - iot_net
+
   # Prometheus-Gateway/Mosquitto
   mosquitto:
     build:
@@ -92,7 +107,7 @@ services:
     restart: always
     volumes:
       - ./prometheus_data:/prometheus_data
-      - ./grafana_ee4216/provisioning/datasources/images:/images
+      - ./prometheus_data/images:/images
     ports:
       - '1884:1884'
     environment:

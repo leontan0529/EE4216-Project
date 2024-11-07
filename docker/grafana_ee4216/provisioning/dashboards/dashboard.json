@@ -471,6 +471,7 @@
             "axisBorderShow": false,
             "axisCenteredZero": false,
             "axisColorMode": "text",
+            "axisLabel": "",
             "axisPlacement": "auto",
             "axisSoftMax": 50,
             "axisSoftMin": 0,
@@ -934,7 +935,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<img src=\"https://safeguardsystems.co.uk/wp-content/uploads/2021/11/Apartment-block-security.jpg\" alt=\"Description\" width=\"600\" height=\"400\">\n",
+        "content": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>Auto-refreshing Image</title>\n    <script>\n        // Function to reload the image every 5 seconds (or adjust as needed)\n        function refreshImage() {\n            const image = document.getElementById(\"auto-refresh-image\");\n            image.src = \"http://localhost:9093/data/images/image.jpeg?timestamp=\" + new Date().getTime();\n        }\n        setInterval(refreshImage, 5000); // Refresh every 5 seconds\n    </script>\n</head>\n<body>\n    <img id=\"auto-refresh-image\" src=\"http://localhost:9093/data/images/image.jpeg\" alt=\"Description\" width=\"600\" height=\"400\">\n</body>\n</html>",
         "mode": "html"
       },
       "pluginVersion": "11.2.0",
@@ -982,6 +983,6 @@
   "timezone": "browser",
   "title": "The Smart Haus",
   "uid": "cdzte3nlkywaoa",
-  "version": 9,
+  "version": 12,
   "weekStart": ""
 }
