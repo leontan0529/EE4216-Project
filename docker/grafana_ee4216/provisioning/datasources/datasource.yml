@@ -1,6 +1,7 @@
-#datasources:
-#  - name:
-#    type: postgres
-#    access: proxy
-#    url: http://container-name:5432
-#    isDefault: true  
+datasources:
+  - name: Prometheus
+    type: prometheus
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true  
+    editable: true

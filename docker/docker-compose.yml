@@ -17,10 +17,11 @@ services:
       - ./grafana_ee4216/provisioning/:/etc/grafana/provisioning/
     environment:
       - GF_PANELS_DISABLE_SANITIZE_HTML=true
+      - TZ=UTC-8
     networks:
       - iot_net
 
-  # Metrics Provider/Scraper
+  # Prometheus/Prometheus
   prometheus:
     image: prom/prometheus
     container_name: prometheus
@@ -32,10 +33,26 @@ services:
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
       - '--storage.tsdb.path=/prometheus'
+      - '--web.enable-remote-write-receiver'
     ports:
       - '9090:9090'
     networks:
       - iot_net 
+
+  # Prometheus/Prometheus-Exporter
+  prometheus-exporter:
+    build:
+      context: ./prometheus/prometheus-exporter
+    container_name: prometheus-exporter
+    restart: always
+    volumes:
+      - ./prometheus_data:/prometheus_data
+    ports:
+      - '9092:9092'
+    environment:
+      - TZ=UTC-8
+    networks:
+      - iot_net
 
   # Prometheus-Gateway/Mosquitto
   mosquitto:
