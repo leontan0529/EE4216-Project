@@ -1,0 +1,6 @@
+# Ignore everything
+*
+
+# Except these directories
+!2024-11-08/
+!images/
