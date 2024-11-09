@@ -25,6 +25,7 @@
 #include <StringArray.h>
 #include <SPIFFS.h>
 #include <FS.h>
+#include "ESP32MQTTClient.h"
 
 // Credentials for access point
 const char* ssid = "ESP32-AP";
@@ -44,6 +45,11 @@ const int serverPort = 1884;
 AsyncWebServer server(80);
 
 WiFiClient client;
+
+// MQTT details
+const char* mqttServer = "mqtt://192.168.4.3:1883";
+const char *publishTopic = "img";
+ESP32MQTTClient mqttClient; // all params are set later
 
 volatile bool alarmActivated = false;
 volatile bool magnetSeparated = false;
@@ -150,6 +156,17 @@ void setup() {
   }
   Serial.println("\nIP address: ");
   Serial.println(WiFi.localIP());
+
+  // Wait for ESP32 to connect to MQTT server
+  Serial.print("Connecting to MQTT server.");
+  while (!mqttClient.isConnected()) {
+    Serial.print(".");
+    mqttClient.setURI(mqttServer);
+    mqttClient.enableLastWillMessage("lwt", "I am going offline");
+    mqttClient.setKeepAlive(30);
+    mqttClient.loopStart();
+    delay(1000);
+  }
 
   if (!SPIFFS.begin(true)) {
     Serial.println("An Error has occurred while mounting SPIFFS");
@@ -404,5 +421,20 @@ void sendPhoto() {
     Serial.println(getBody);
   }
 
+  // Alert via MQTT that picture was taken
+  mqttClient.publish(publishTopic, "1");
   return;
+}
+
+void onMqttConnect(esp_mqtt_client_handle_t client)
+{
+    if (mqttClient.isMyTurn(client)) // can be omitted if only one client
+    {
+        // For MQTT subscribe
+    }
+}
+
+void handleMQTT(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data){
+  auto *event = static_cast<esp_mqtt_event_handle_t>(event_data);
+  mqttClient.onEventCallback(event);
 }
