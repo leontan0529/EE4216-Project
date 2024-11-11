@@ -1,130 +1,115 @@
+#include "Arduino.h"
 #include <WiFi.h>
-#include <ESPAsyncWebSrv.h>
-#include <DHT.h>
-#include <Adafruit_NeoPixel.h>
-#include <HTTPClient.h>
-#include <Arduino.h>
+#include "ESP32MQTTClient.h"
+#include "DHT.h"
+#include "BH1750.h"
+#include "MQ2.h"
 
-#define DHTPIN 4           // DHT22 data pin
-#define DHTTYPE DHT22      // DHT type
-#define TRIG_PIN 5        // HC-SR04 trigger pin
-#define ECHO_PIN 18       // HC-SR04 echo pin
-#define RELAY_PIN 16      // Relay control pin
-#define RGB_PIN 17        // RGB LED pin
-#define NUM_PIXELS 1      // Number of pixels in RGB LED stick
+// DHT sensor setup
+#define DHTPIN 4     
+#define DHTTYPE DHT22
+#define MQ2_PIN A0
 
 DHT dht(DHTPIN, DHTTYPE);
-Adafruit_NeoPixel pixels(NUM_PIXELS, RGB_PIN, NEO_GRB + NEO_KHZ800);
+BH1750 lightSensor;          // Create an instance of the BH1750 sensor
+MQ2 mq2(MQ2_PIN);            // Create an instance of the MQ-2 sensor
 
-const char* ssid = "ESP32_AP";         // Access Point SSID
-const char* password = "12345678";     // Access Point Password
-const char* accessPointHost = "http://192.168.4.1"; // Replace with your Access Point IP address
+const char *ssid = "ESP32AP";
+const char *pass = "EE4216ee";
 
-// Function declarations
-float getDistance();
-void sendDataToAccessPoint(float humidity, float temperature, float distance);
-void readSensorsTask(void *pvParameters);
+// Test Mosquitto server, see: https://test.mosquitto.org
+char *server = "mqtt://192.168.4.2:1883";
 
-void setup() {
+char *subscribeTopic = "sensordata";
+//char *publishTopic = "hello/esp";
+char *tempTopic = "tem";       // Topic for temperature
+char *humidityTopic = "hum"; // Topic for humidity
+char *gasTopic = "gas";         // Topic for gas concentration
+char *lightTopic = "lux";     // Topic for light level
+
+ESP32MQTTClient mqttClient;
+
+void setup()
+{
     Serial.begin(115200);
+    log_i();
+    log_i("setup, ESP.getSdkVersion(): ");
+    log_i("%s", ESP.getSdkVersion());
+
     dht.begin();
-    pixels.begin();
+    lightSensor.begin(); // Initialize BH1750 sensor
+    mq2.begin();         // Initialize MQ-2 sensor
 
-    pinMode(TRIG_PIN, OUTPUT);
-    pinMode(ECHO_PIN, INPUT);
-    pinMode(RELAY_PIN, OUTPUT);
+    mqttClient.enableDebuggingMessages();
 
-    // Connect to Wi-Fi
-    WiFi.begin(ssid, password);
+    mqttClient.setURI(server);
+    mqttClient.enableLastWillMessage("lwt", "I am going offline");
+    mqttClient.setKeepAlive(30);
+    WiFi.begin(ssid, pass);
     while (WiFi.status() != WL_CONNECTED) {
-        delay(1000);
-        Serial.println("Connecting to WiFi...");
+      Serial.print('.');
+      delay(1000);
     }
-    Serial.print("IP address: ");
-    Serial.println(WiFi.localIP());
-    Serial.println("Connected to WiFi");
-
-    // Create tasks for RTOS
-    xTaskCreate(readSensorsTask, "Read Sensors", 2048, NULL, 1, NULL);
+    Serial.println("\nConnected to WiFi");
+    WiFi.setHostname("sensor");
+    mqttClient.loopStart();
 }
 
-void loop() {
-// Main loop can be empty as tasks are handled by the web server and RTOS
-}
+int pubCount = 0;
 
-void readSensorsTask(void *pvParameters) {
-    for (;;) {
-        // Read temperature and humidity
-        float humidity = dht.readHumidity();
-        float temperature = dht.readTemperature();
-        float distance = getDistance();
+void loop()
+{
+    /*
+    String msg = "Hello: " + String(pubCount++);
+    mqttClient.publish(publishTopic, msg, 0, false);
+    */
+    float temp = dht.readTemperature();    
+    float humidity = dht.readHumidity();   
+    float lightLevel = lightSensor.readLightLevel();
+    
+    float co = mq2.readCO();               // Read CO concentration
 
-        if (!isnan(humidity) && !isnan(temperature)) {
-            sendDataToAccessPoint(humidity, temperature, distance);
-            Serial.print("Humidity: ");
-            Serial.print(humidity);
-            Serial.print(" %\tTemperature: ");
-            Serial.print(temperature);
-            Serial.print(" *C\tDistance: ");
-            Serial.print(distance);
-            Serial.println(" cm");
-        } else {
-            Serial.println("Failed to read from DHT sensor!");
-        }
 
-        // Control relay based on distance or other conditions
-        if (distance < 10) { // Assuming <10 cm indicates an intruder
-            digitalWrite(RELAY_PIN, LOW); // Activate relay (unlock)
-            pixels.setPixelColor(0, pixels.Color(255, 0, 0)); // Red color for intruder alert
-            pixels.show();
-            Serial.println("Intruder detected! Relay activated.");
-            vTaskDelay(5000 / portTICK_PERIOD_MS); // Keep relay active for a while
-            digitalWrite(RELAY_PIN, HIGH); // Deactivate relay (lock)
-            pixels.setPixelColor(0, pixels.Color(0, 0, 0)); // Turn off RGB LED
-            pixels.show();
-        } else {
-            digitalWrite(RELAY_PIN, HIGH); // Ensure relay is off when no intruder
-            pixels.setPixelColor(0, pixels.Color(0, 255, 0)); // Green color when safe
-            pixels.show();
-        }
-        delay(10000); // Send data every 10 seconds
+    if (isnan(temp) || isnan(humidity)) {
+        Serial.println("Failed to read from DHT sensor!");
+        return;
     }
 
-    vTaskDelay(2000 / portTICK_PERIOD_MS); // Delay before next reading
+ // Publish temperature and humidity readings
+    mqttClient.publish(tempTopic, String(temp), 0, false);
+    mqttClient.publish(humidityTopic, String(humidity), 0, false);
+    
+    // Publish gas concentration
+    mqttClient.publish(gasTopic, String(co), 0, false);
+
+    // Publish light level reading
+    mqttClient.publish(lightTopic, String(lightLevel), 0, false);
+
+    Serial.print("Temperature: ");
+    Serial.print(temp);
+    Serial.print(" °C\tHumidity: ");
+    Serial.print(humidity);
+    Serial.print(" %\tGas Levels: ");
+    Serial.print(co);
+    Serial.print("\tLight Level: ");
+    Serial.println(lightLevel);
+
+    delay(60000); // Send data every 60 seconds
 }
 
-float getDistance() {
-    digitalWrite(TRIG_PIN, LOW);
-    delayMicroseconds(2);
-    digitalWrite(TRIG_PIN, HIGH);
-    delayMicroseconds(10);
-    digitalWrite(TRIG_PIN, LOW);
+void onMqttConnect(esp_mqtt_client_handle_t client)
+{
+    if (mqttClient.isMyTurn(client)) // can be omitted if only one client
+    {
+        mqttClient.subscribe(subscribeTopic, [](const String &payload)
+                             { Serial.println(String(subscribeTopic)+String(" ")+String(payload.c_str())); });
 
-    long duration = pulseIn(ECHO_PIN, HIGH);
-    return (duration * 0.0343) / 2; // Calculate distance in cm
-}
-
-void sendDataToAccessPoint(float humidity, float temperature, float distance) {
-    if (WiFi.status() == WL_CONNECTED) {
-        HTTPClient http;
-        String url = String(accessPointHost) + "/sensor_data";
-
-        String payload = "humidity=" + String(humidity) + "&temperature=" + String(temperature) + "&distance=" + String(distance);
-
-        http.begin(url); 
-        http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-
-        int httpResponseCode = http.POST(payload); 
-
-        if (httpResponseCode > 0) {
-            String response = http.getString(); 
-            Serial.println(httpResponseCode);   
-            Serial.println(response);            
-        } else {
-            Serial.print("Error on sending POST: ");
-            Serial.println(httpResponseCode);
-        }
-        
-        http.end(); 
+        mqttClient.subscribe("bar/#", [](const String &topic, const String &payload)
+                             { log_i("%s: %s", topic, payload.c_str()); });
     }
+}
+
+void handleMQTT(void *handler_args, esp_event_base_t base, int32_t event_id, void *event_data){
+  auto *event = static_cast<esp_mqtt_event_handle_t>(event_data);
+  mqttClient.onEventCallback(event);
 }
