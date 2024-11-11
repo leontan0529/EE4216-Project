@@ -14,11 +14,16 @@ DHT dht(DHTPIN, DHTTYPE);
 BH1750 lightSensor;          // Create an instance of the BH1750 sensor
 MQ2 mq2(MQ2_PIN);            // Create an instance of the MQ-2 sensor
 
-const char *ssid = "ESP32AP";
-const char *pass = "EE4216ee";
+const char *ssid = "ESP32-AP";
+const char *pass = "12345678";
+
+// Assign static IP address to cam
+IPAddress local_IP(192, 168, 4, 4);
+IPAddress gateway(192, 168, 4, 1);
+IPAddress subnet(255, 255, 255, 0);
 
 // Test Mosquitto server, see: https://test.mosquitto.org
-char *server = "mqtt://192.168.4.2:1883";
+char *server = "mqtt://192.168.4.3:1883";
 
 char *subscribeTopic = "sensordata";
 //char *publishTopic = "hello/esp";
@@ -45,6 +50,12 @@ void setup()
     mqttClient.setURI(server);
     mqttClient.enableLastWillMessage("lwt", "I am going offline");
     mqttClient.setKeepAlive(30);
+	
+	// Configure the ESP32 to use a static IP
+	if (!WiFi.config(local_IP, gateway, subnet)) {
+	  Serial.println("Failed to configure static IP!");
+	}
+	
     WiFi.begin(ssid, pass);
     while (WiFi.status() != WL_CONNECTED) {
       Serial.print('.');
