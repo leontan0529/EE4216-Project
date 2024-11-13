@@ -16,10 +16,21 @@ services:
       - grafana-storage:/var/lib/grafana
       - ./grafana_ee4216/provisioning/:/etc/grafana/provisioning/
     environment:
+      - GF_SMTP_ENABLED=true
+      - GF_SMTP_HOST=smtp.gmail.com:587
+      - GF_SMTP_USER=leontan0529@gmail.com
+      - GF_SMTP_PASSWORD=xysk potz ztnv gnhd
+      - GF_SMTP_FROM_ADDRESS=leontan052@gmail.com
+      - GF_SMTP_FROM_NAME=Grafana
+      - GF_SMTP_SKIP_VERIFY=true
       - GF_PANELS_DISABLE_SANITIZE_HTML=true
       - TZ=UTC-8
     networks:
       - iot_net
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+      - "other-device:192.168.4.10" # change depending on IP of Cam
+      - "other-device:192.168.115.40" # change depending on IP of Cam
 
   # Mock Insertion
   mock_insertion:
@@ -75,6 +86,8 @@ services:
     restart: always
     volumes:
       - ./prometheus_data/images:/etc/nginx/html/data/images
+      - ./machine_learning/ml_brightness:/etc/nginx/html/data/ml_brightness
+      - ./machine_learning/ml_image:/etc/nginx/html/data/ml_image
     ports:
       - '9093:80'
     environment:
