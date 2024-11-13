@@ -28,16 +28,16 @@
 #include "ESP32MQTTClient.h"
 
 // Credentials for access point
-const char* ssid = "ESP32-AP";
-const char* password = "12345678";
+const char* ssid = "khai_rizz";
+const char* password = "handsumboi";
 
 // Assign static IP address to cam
-IPAddress local_IP(192, 168, 4, 2);
-IPAddress gateway(192, 168, 4, 1);
+IPAddress local_IP(192, 168, 157, 121);
+IPAddress gateway(192, 168, 157, 138);
 IPAddress subnet(255, 255, 255, 0);
 
 // Server details for POST-ing image
-String serverName = "192.168.4.3";
+String serverName = "192.168.157.167";
 String serverPath = "/upload";  // Flask upload route
 const int serverPort = 1884;
 
@@ -47,7 +47,7 @@ AsyncWebServer server(80);
 WiFiClient client;
 
 // MQTT details
-const char* mqttServer = "mqtt://192.168.4.3:1883";
+const char* mqttServer = "mqtt://192.168.157.167:1883";
 const char *publishTopic = "img";
 ESP32MQTTClient mqttClient; // all params are set later
 
@@ -63,6 +63,8 @@ void IRAM_ATTR handleMagnetSeparated() {
 void disableAlarm() {
     alarmActivated = false;
 }
+
+int64_t timeSinceSent = esp_timer_get_time();
 
 // Photo File Name to save in SPIFFS
 #define FILE_PHOTO "/image.jpg"
@@ -92,6 +94,8 @@ void disableAlarm() {
 #define NUMPIXELS 8
 
 Adafruit_NeoPixel strip = Adafruit_NeoPixel(NUMPIXELS, LED_PIN, NEO_GRB + NEO_KHZ800);
+
+const int64_t TIME_ALERT = 10000000;
 
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML><html>
@@ -284,6 +288,10 @@ void loop() {
 
     while(alarmActivated) {
       // Wait until alarm is deactivated remotely
+      if ((esp_timer_get_time() - timeSinceSent) >= TIME_ALERT) {
+        mqttClient.publish(publishTopic, "2");
+        timeSinceSent = esp_timer_get_time();
+      }
     }
 
     magnetSeparated = false;  // Reset the flag
@@ -297,7 +305,11 @@ void loop() {
     Serial.println("Alarm deactivated.");
   }
 
-  delay(50);
+  // Sent 0 to img every 10s
+  if ((esp_timer_get_time() - timeSinceSent) >= TIME_ALERT) {
+    mqttClient.publish(publishTopic, "0");
+    timeSinceSent = esp_timer_get_time();
+  }
 }
 
 // Check if photo capture was successful
@@ -422,7 +434,7 @@ void sendPhoto() {
   }
 
   // Alert via MQTT that picture was taken
-  mqttClient.publish(publishTopic, "1");
+  mqttClient.publish(publishTopic, "2");
   return;
 }
 

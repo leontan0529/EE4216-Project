@@ -87,6 +87,11 @@ bool infoReceived() {
   return (tempReceived || humidReceived || gasReceived || lightReceived);
 }
 
+/*
+  DARK = 3500
+  BRIGHT = 1000
+*/
+
 void setup() {
   Serial.begin(115200);
 
@@ -196,7 +201,16 @@ void loop() {
   }
 
   if (currentScreen == DISPLAY_INFO_SCREEN_2) {
-    printScreen("Gas: " + gas, "Light: " + light);
+    String light_level;
+
+    if (light.toInt() >= 3500) {
+      light_level = "BRIGHT";
+    } else if (light.toInt() <= 1000) {
+      light_level = "DARK";
+    } else {
+      light_level = "AMBIENT";
+    }
+    printScreen("Gas: " + gas + "ppm", "Light: " + light_level);
 
     if (isNextScreen()) {
       changeScreen(DISPLAY_INFO_SCREEN_1);
@@ -255,15 +269,10 @@ void onMqttConnect(esp_mqtt_client_handle_t client)
     {
         mqttClient.subscribe(alarmTopic, [](const String &payload)
             {
-              if (String(payload) == "1") {
+              if (String(payload) == "2") {
                 alarmActivated = true;
                 changeScreen(ALARM_SCREEN);
-              }
-            });
-
-        mqttClient.subscribe(clearAlarmTopic, [](const String &payload)
-            {
-              if (String(payload) == "1") {
+              } else {
                 alarmActivated = false;
                 changeScreen(DEACTIVATE_SCREEN);
               }

@@ -8,22 +8,21 @@
 // DHT sensor setup
 #define DHTPIN 4     
 #define DHTTYPE DHT22
-#define MQ2_PIN A0
+#define MQ2_PIN 6
+#define LIGHT_PIN 5
 
 DHT dht(DHTPIN, DHTTYPE);
-BH1750 lightSensor;          // Create an instance of the BH1750 sensor
-MQ2 mq2(MQ2_PIN);            // Create an instance of the MQ-2 sensor
 
-const char *ssid = "ESP32-AP";
-const char *pass = "12345678";
+const char *ssid = "khai_rizz";
+const char *pass = "handsumboi";
 
-// Assign static IP address to cam
-IPAddress local_IP(192, 168, 4, 4);
-IPAddress gateway(192, 168, 4, 1);
+// Assign static IP address to sensor ESP
+IPAddress local_IP(192, 168, 157, 122);
+IPAddress gateway(192, 168, 157, 138);
 IPAddress subnet(255, 255, 255, 0);
 
 // Test Mosquitto server, see: https://test.mosquitto.org
-char *server = "mqtt://192.168.4.3:1883";
+char *server = "mqtt://192.168.157.167:1883";
 
 char *subscribeTopic = "sensordata";
 //char *publishTopic = "hello/esp";
@@ -42,8 +41,7 @@ void setup()
     log_i("%s", ESP.getSdkVersion());
 
     dht.begin();
-    lightSensor.begin(); // Initialize BH1750 sensor
-    mq2.begin();         // Initialize MQ-2 sensor
+    // pinMode(MQ2_PIN, INPUT);
 
     mqttClient.enableDebuggingMessages();
 
@@ -68,6 +66,7 @@ void setup()
 
 int pubCount = 0;
 
+
 void loop()
 {
     /*
@@ -76,9 +75,9 @@ void loop()
     */
     float temp = dht.readTemperature();    
     float humidity = dht.readHumidity();   
-    float lightLevel = lightSensor.readLightLevel();
-    
-    float co = mq2.readCO();               // Read CO concentration
+    float lightLevel = analogRead(LIGHT_PIN);
+
+    float co = analogRead(MQ2_PIN);             // Read CO concentration
 
 
     if (isnan(temp) || isnan(humidity)) {
