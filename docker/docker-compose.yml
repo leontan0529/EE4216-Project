@@ -30,7 +30,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "other-device:192.168.4.10" # change depending on IP of Cam
-      - "other-device:192.168.115.40" # change depending on IP of Cam
+      - "other-device:192.168.157.121" # change depending on IP of Cam
 
   # Mock Insertion
   mock_insertion:

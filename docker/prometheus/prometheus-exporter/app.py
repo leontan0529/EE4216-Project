@@ -21,13 +21,17 @@ TEMPERATURE = Gauge('temperature', 'Temperature of the sensor', ['sensor'])
 LUX = Gauge('lux', 'Lux value of the sensor', ['sensor'])
 HUMIDITY = Gauge('humidity', 'Humidity of the sensor', ['sensor'])
 GAS = Gauge('gas', 'Gas levels of the sensor', ['sensor'])
+PIR = Gauge('motion', 'PIR sensor status', ['sensor'])
+IMG = Gauge('intrusion', 'Door intrusion status', ['sensor'])
 
 # Track the latest timestamp for each sensor to manage staleness
 last_update = {
     "tem": None,
     "lux": None,
     "hum": None,
-    "gas": None
+    "gas": None,
+    "pir": None,
+    "img": None
 }
 
 # Threshold for considering data stale (e.g., 1 minute)
@@ -36,7 +40,7 @@ STALE_THRESHOLD = timedelta(minutes=1)
 # Define the function to read logs and expose metrics
 def read_logs_and_expose_metrics():
     data_dir = "/prometheus_data"
-    sensor_types = ["tem", "lux", "hum", "gas"]
+    sensor_types = ["tem", "lux", "hum", "gas", "pir", "img"]
     new_data_found = False  # Flag to detect if any new data is found
 
     for sensor in sensor_types:
@@ -90,6 +94,10 @@ def read_logs_and_expose_metrics():
                                 HUMIDITY.labels(sensor=sensor).set(value)
                             elif sensor == "gas":
                                 GAS.labels(sensor=sensor).set(value)
+                            elif sensor == "pir":
+                                PIR.labels(sensor=sensor).set(value)
+                            elif sensor == "img":
+                                IMG.labels(sensor=sensor).set(value)
 
                     except ValueError as e:
                         logger.error(f"Error parsing line: {line}. Exception: {str(e)}")
@@ -111,6 +119,10 @@ def reset_stale_metrics():
                 HUMIDITY.labels(sensor=sensor).set(float('nan'))
             elif sensor == "gas":
                 GAS.labels(sensor=sensor).set(float('nan'))
+            elif sensor == "pir":
+                PIR.labels(sensor=sensor).set(float('nan'))
+            elif sensor == "img":
+                IMG.labels(sensor=sensor).set(float('nan'))
 
 # Start Prometheus HTTP server
 def start_exporter():
