@@ -1,3 +1,45 @@
 Change organisation account: ./provisioning/dashboards/dashboard.yml
 Change database: ./provisioning/datasources/datasource.yml
 Change main dashboard: ./provisioning/dashboards/dashboard.yml
+
+
+For Grafana Alert
+[3] Folder: The Smart Haus Alerts
+[3] Evaluation: Normal (1m), URGENT (10s)
+[4] Receiver
+
+Critical Temperature
+temperature job prometheus-exporter
+{remove B}
+Input A is above 32 custom 32 
+[CRITICAL] Temperature is above 32 degC. Please turn on fan to cool down your room. You are recommended to turn on the air-conditioner.
+
+Warning Temperature
+temperature job prometheus-exporter
+{remove B}
+Input A is above 30 custom 30
+[WARNING] Temperature is above 30 degC. You are recommended to turn on the fan.
+
+Critical Humidity
+humidity job prometheus-exporter
+{remove B}
+Input A is above 80 custom 80
+[CRITICAL] Humidity is above 80%H. Please turn on the air-conditioner.
+
+Warning Humidity
+humidity job prometheus-exporter
+{remove B}
+Input A is above 60 custom 60
+[WARNING] Humidity is above 60%H. You are recommended to open the windows or turn on the air-conditioner.
+
+Critical Brightness
+brightness job prometheus-exporter
+{remove B}
+Input A is above 3500 custom 3500
+[CRITICAL] Surrounding rightness is too low. Please turn on the lights.
+
+Critical Gas
+gas job prometheus-exporter
+{remove B}
+Input A is above 160 custom 160
+[Critical] Gas is above 160ppm. You are recommended to open on the windows to increase ventilation.

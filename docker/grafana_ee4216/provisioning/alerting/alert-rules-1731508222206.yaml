@@ -1,0 +1,481 @@
+apiVersion: 1
+groups:
+    - orgId: 1
+      name: NORMAL
+      folder: The Smart Haus Alerts
+      interval: 1m
+      rules:
+        - uid: de3sjcmtayosge
+          title: Warning Temperature
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: temperature{job="prometheus-exporter"}
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 30
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                      unloadEvaluator:
+                        params:
+                            - 30
+                        type: lt
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: ce3tqelh6daf4e
+          panelId: 10
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            __dashboardUid__: ce3tqelh6daf4e
+            __panelId__: "10"
+            summary: '[WARNING] Temperature is above 30 degC. You are recommended to turn on the fan.'
+          labels: {}
+          isPaused: false
+          notification_settings:
+            receiver: Receiver
+        - uid: ae3tufwmrpfy8b
+          title: Critical Temperature
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: temperature{job="prometheus-exporter"}
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 32
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                      unloadEvaluator:
+                        params:
+                            - 32
+                        type: lt
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: ce3tqelh6daf4e
+          panelId: 10
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            __dashboardUid__: ce3tqelh6daf4e
+            __panelId__: "10"
+            summary: '[CRITICAL] Temperature is above 32 degC. Please turn on fan to cool down your room. You are recommended to turn on the air-conditioner.'
+          labels: {}
+          isPaused: false
+          notification_settings:
+            receiver: Receiver
+        - uid: de3tujlamkjy8f
+          title: Warning Humidity
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: humidity{job="prometheus-exporter"}
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 60
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                      unloadEvaluator:
+                        params:
+                            - 60
+                        type: lt
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: ce3tqelh6daf4e
+          panelId: 11
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            __dashboardUid__: ce3tqelh6daf4e
+            __panelId__: "11"
+            summary: '[CRITICAL] Humidity is above 80%H. Please turn on the air-conditioner.'
+          labels: {}
+          isPaused: false
+          notification_settings:
+            receiver: Receiver
+        - uid: ae3tumf5e0ow0a
+          title: Critical Humidity
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: humidity{job="prometheus-exporter"}
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 80
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                      unloadEvaluator:
+                        params:
+                            - 80
+                        type: lt
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: ce3tqelh6daf4e
+          panelId: 11
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            __dashboardUid__: ce3tqelh6daf4e
+            __panelId__: "11"
+            summary: '[WARNING] Humidity is above 60%H. You are recommended to open the windows or turn on the air-conditioner.'
+          labels: {}
+          isPaused: false
+          notification_settings:
+            receiver: Receiver
+        - uid: ce3tupx1aat4wc
+          title: Warning Brightness
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: lux{job="prometheus-exporter"}
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 3000
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                      unloadEvaluator:
+                        params:
+                            - 3000
+                        type: lt
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: ce3tqelh6daf4e
+          panelId: 12
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            __dashboardUid__: ce3tqelh6daf4e
+            __panelId__: "12"
+            summary: '[CRITICAL] Surrounding brightness is too low. Please turn on the lights.'
+          labels: {}
+          isPaused: false
+          notification_settings:
+            receiver: Receiver
+        - uid: fe3tutm6yxtz4a
+          title: Warning Smoke Detected
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: gas{job="prometheus-exporter"}
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 300
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                      unloadEvaluator:
+                        params:
+                            - 300
+                        type: lt
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: ce3tqelh6daf4e
+          panelId: 14
+          noDataState: NoData
+          execErrState: Error
+          for: 1m
+          annotations:
+            __dashboardUid__: ce3tqelh6daf4e
+            __panelId__: "14"
+            summary: '[Critical] You are recommended to open on the windows to increase ventilation.'
+          labels: {}
+          isPaused: false
+          notification_settings:
+            receiver: Receiver
+    - orgId: 1
+      name: URGENT
+      folder: The Smart Haus Alerts
+      interval: 10s
+      rules:
+        - uid: fe3tuypesbnk0e
+          title: Warning Intruder
+          condition: C
+          data:
+            - refId: A
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: PBFA97CFB590B2093
+              model:
+                disableTextWrap: false
+                editorMode: builder
+                expr: intrusion{job="prometheus-exporter"}
+                fullMetaSearch: false
+                includeNullMetadata: true
+                instant: true
+                intervalMs: 1000
+                legendFormat: __auto
+                maxDataPoints: 43200
+                range: false
+                refId: A
+                useBackend: false
+            - refId: C
+              relativeTimeRange:
+                from: 600
+                to: 0
+              datasourceUid: __expr__
+              model:
+                conditions:
+                    - evaluator:
+                        params:
+                            - 1
+                        type: gt
+                      operator:
+                        type: and
+                      query:
+                        params:
+                            - C
+                      reducer:
+                        params: []
+                        type: last
+                      type: query
+                      unloadEvaluator:
+                        params:
+                            - 1
+                        type: lt
+                datasource:
+                    type: __expr__
+                    uid: __expr__
+                expression: A
+                intervalMs: 1000
+                maxDataPoints: 43200
+                refId: C
+                type: threshold
+          dashboardUid: ce3tqelh6daf4e
+          panelId: 17
+          noDataState: NoData
+          execErrState: Error
+          for: 0s
+          annotations:
+            __dashboardUid__: ce3tqelh6daf4e
+            __panelId__: "17"
+            summary: 'INTRUDER ALERT. Follow this link: http://192.168.157.167:3000/d/ce3tqelh6daf4e/the-smart-haus?orgId=1&refresh=30s&tab=query&viewPanel=16'
+          labels: {}
+          isPaused: false
+          notification_settings:
+            receiver: Receiver
