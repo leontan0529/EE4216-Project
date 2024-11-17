@@ -1,0 +1,118 @@
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Error during recognition: 'NoneType' object is not callable
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Unrecognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Unrecognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Unrecognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Unrecognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Unrecognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Unrecognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Unrecognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User B
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized: User A
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: UnRecognized user
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: UnRecognized user
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: UnRecognized user
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: UnRecognized user
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized face
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: UnRecognized user
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: UnRecognized user
+/Users/constanceow/Downloads/CS3237_ML/training_capture/captured_image.jpg: Recognized face
