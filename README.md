@@ -2,6 +2,9 @@
 NUS AY2024/25 Sem 1 EE4216 Project
 ![diagram](images/diagram.png)
 
+## List of Hardware Used
+![list of hardware](images/list_of_hardware.png)
+
 # Git Commands (for team's reference)
 Ensure that you're always in your own branch:
 ```bash

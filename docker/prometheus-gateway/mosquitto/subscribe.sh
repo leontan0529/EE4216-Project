@@ -33,3 +33,10 @@ mosquitto_sub -h localhost -t "lux" | while read -r payload; do
   save_data "lux" "$payload"
 done &
 
+mosquitto_sub -h localhost -t "pir" | while read -r payload; do
+  save_data "pir" "$payload"
+done &
+
+mosquitto_sub -h localhost -t "img" | while read -r payload; do
+  save_data "img" "$payload"
+done &

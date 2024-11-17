@@ -1,4 +1,5 @@
-# Setting up Grafana_EE4216 in your environment
+# Setting up our Docker Containers in your environment
+As easy as ABC, 123! Just follow the steps below
 ## For Windows Users
 **Please use WSL2 for the steps below.**<br>
 1. Ensure WSL2 is updated
@@ -10,7 +11,13 @@ sudo apt upgrade -y
 ```bash
 sudo apt-get install docker -y
 ```
-3. Start dockers
+3. Configure system
+```bash
+sudo groupadd docker
+sudo usermod -aG docker $USER
+```
+4. Log out of terminal and log back in to re-evaluate group membership
+5. Start dockers
 ```bash
 sudo systemctl start docker
 ```
@@ -21,6 +28,7 @@ If your docker desktop is unable to access your docker from WSL2, do the followi
 3. Navigate to **Settings**
 4. From the **General** tab, select use **WSL 2 based engine**.
 5. Select **Apply & Restart**
+
 ## For Mac Users
 1. Ensure WSL2 is updated
 ```bash
@@ -31,7 +39,13 @@ brew upgrade
 ```bash
 brew install docker
 ```
-3. Start dockers
+3. Configure system
+```bash
+sudo groupadd docker
+sudo usermod -aG docker $USER
+```
+4. Log out of terminal and log back in to re-evaluate group membership
+5. Start dockers
 ```bash
 brew services start docker
 ```
@@ -53,7 +67,6 @@ Alternatively, you may use **docker desktop** app to view your running container
 ## To view the various tools
 - To view Grafana (*grafana_ee4216*, visualisation tool): [localhost:3000](localhost:3000)
 - To view Prometheus (*prometheus*, endpoint scraper): [localhost:9090](localhost:9090)
-- To view Mongo Express (*mongo-express*, MongoDB GUI): [localhost:8081](localhost:8081)
 
 ### Miscellaneous Notes:
 - Pre-Requisite: Give permissions to all shell scripts
@@ -80,4 +93,4 @@ chmod 755 *.sh
 ```bash
 ./create_all_containers.sh
 ```
-- Find out more about **docker products** from their website/other sources.
+- Find out more about **docker products** from their website/other sources:PP

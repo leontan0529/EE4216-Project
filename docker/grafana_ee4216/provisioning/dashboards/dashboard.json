@@ -961,7 +961,7 @@
           "showLineNumbers": false,
           "showMiniMap": false
         },
-        "content": "<div id=\"controlButton\">\n  <button id=\"toggleButton\" onclick=\"turnOff()\" style=\"padding: 10px 20px; font-size: 16px; background-color: red; color: white; border: none; cursor: pointer;\">\n    Disarm Alarm\n  </button>\n</div>\n\n<script>\n  function turnOff() {\n    // Set ESP32 IP and fixed \"off\" state\n    const esp32IP = \"http://192.168.4.2/handleControl\";  // Replace with your ESP32 IP\n    const state = \"off\";\n\n    // Send the HTTP POST request to ESP32 with the state \"off\"\n    fetch(`${esp32IP}?state=${state}`, {\n      method: \"POST\",\n      headers: {\n        \"Content-Type\": \"application/x-www-form-urlencoded\"\n      }\n    })\n    .then(response => {\n      if (response.ok) {\n        console.log(\"ESP32 state set to: off\");\n      } else {\n        console.error(\"Error sending request to ESP32\");\n      }\n    })\n    .catch(error => {\n      console.error(\"Network error:\", error);\n    });\n  }\n</script>",
+        "content": "<div id=\"controlButton\">\n  <button id=\"toggleButton\" onclick=\"turnOff()\" style=\"padding: 10px 20px; font-size: 16px; background-color: red; color: white; border: none; cursor: pointer;\">\n    Disarm Alarm\n  </button>\n</div>\n\n<script>\n  function turnOff() {\n    // Set ESP32 IP and fixed \"off\" state\n    const esp32IP = \"http://192.168.157.121/control\";  // Replace with your ESP32 IP\n    const state = \"off\";\n\n    // Send the HTTP POST request to ESP32 with the state \"off\"\n    fetch(`${esp32IP}?state=${state}`, {\n      method: \"POST\",\n      headers: {\n        \"Content-Type\": \"application/x-www-form-urlencoded\"\n      }\n    })\n    .then(response => {\n      if (response.ok) {\n        console.log(\"ESP32 state set to: off\");\n      } else {\n        console.error(\"Error sending request to ESP32\");\n      }\n    })\n    .catch(error => {\n      console.error(\"Network error:\", error);\n    });\n  }\n</script>",
         "mode": "html"
       },
       "pluginVersion": "11.2.0",
@@ -983,6 +983,6 @@
   "timezone": "browser",
   "title": "The Smart Haus",
   "uid": "cdzte3nlkywaoa",
-  "version": 12,
+  "version": 15,
   "weekStart": ""
 }

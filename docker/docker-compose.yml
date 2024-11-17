@@ -18,9 +18,9 @@ services:
     environment:
       - GF_SMTP_ENABLED=true
       - GF_SMTP_HOST=smtp.gmail.com:587
-      - GF_SMTP_USER=leontan0529@gmail.com
-      - GF_SMTP_PASSWORD=xysk potz ztnv gnhd
-      - GF_SMTP_FROM_ADDRESS=leontan052@gmail.com
+      - GF_SMTP_USER= # Removed for security, insert your own email
+      - GF_SMTP_PASSWORD= # Removed for security, generate your own password from your email provider
+      - GF_SMTP_FROM_ADDRESS= # Removed for security, insert your own email (same as GF_SMTP_USER)
       - GF_SMTP_FROM_NAME=Grafana
       - GF_SMTP_SKIP_VERIFY=true
       - GF_PANELS_DISABLE_SANITIZE_HTML=true
@@ -30,7 +30,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
       - "other-device:192.168.4.10" # change depending on IP of Cam
-      - "other-device:192.168.115.40" # change depending on IP of Cam
+      - "other-device:192.168.157.121" # change depending on IP of Cam
 
   # Mock Insertion
   mock_insertion:
